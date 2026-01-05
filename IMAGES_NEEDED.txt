@@ -1,0 +1,87 @@
+========================================
+LISTE DES IMAGES NÉCESSAIRES
+========================================
+
+Placer ces images dans: ox_inventory/web/images/
+
+Format: PNG (recommandé 512x512px ou 256x256px)
+Transparence: Oui (PNG avec alpha channel)
+
+========== MATÉRIAUX DE BASE ==========
+☐ iron_ore.png                - Minerai de fer brut
+☐ scrapmetal.png              - Ferraille
+☐ kevlar_fiber.png            - Fibre de kevlar
+
+========== LINGOTS & MATÉRIAUX ==========
+☐ iron_ingot.png              - Lingot de fer
+☐ steel_bar.png               - Barre d'acier
+☐ steel_ingot.png             - Lingot d'acier
+☐ copper_ingot.png            - Lingot de cuivre
+☐ copper_wire.png             - Fil de cuivre
+☐ gold_ingot.png              - Lingot d'or
+
+========== ITEMS MÉDICAUX ==========
+☐ crutches.png                - Béquilles
+☐ wheelchair.png              - Fauteuil roulant
+☐ bulletproof_vest.png        - Gilet pare-balles (utilisé pour médical, police, gouvernement)
+
+========== ITEMS POLICE ==========
+☐ confiscated_weapon.png      - Arme confisquée
+
+========== ITEMS MÉCANO ==========
+☐ engine.png                  - Moteur
+☐ turbo.png                   - Turbo
+☐ suspension.png              - Suspension
+☐ brakes.png                  - Freins
+☐ repair_kit.png              - Kit de réparation
+
+========== PIERRES TAILLÉES ==========
+☐ cut_quartz.png              - Quartz taillé (blanc/transparent)
+☐ cut_emerald.png             - Émeraude taillée (vert)
+☐ cut_ruby.png                - Rubis taillé (rouge)
+☐ cut_pink_sapphire.png       - Saphir rose taillé (rose)
+☐ cut_amethyst.png            - Améthyste taillée (violet)
+☐ cut_diamond.png             - Diamant taillé (blanc brillant)
+☐ cut_blue_diamond.png        - Diamant bleu taillé (bleu)
+
+========== BIJOUX DE BASE ==========
+☐ gold_ring.png               - Bague en or (sans pierre)
+☐ gold_necklace.png           - Collier en or (sans pierre)
+☐ gold_earrings.png           - Boucles d'oreille en or (sans pierre)
+
+========== BIJOUX AVEC ÉMERAUDE ==========
+☐ emerald_ring.png            - Bague avec émeraude
+☐ emerald_necklace.png        - Collier avec émeraudes
+
+========== BIJOUX AVEC RUBIS ==========
+☐ ruby_ring.png               - Bague avec rubis
+☐ ruby_necklace.png           - Collier avec rubis
+
+========== BIJOUX AVEC SAPHIR ROSE ==========
+☐ pink_sapphire_ring.png      - Bague avec saphir rose
+☐ pink_sapphire_necklace.png  - Collier avec saphirs roses
+
+========== BIJOUX AVEC AMÉTHYSTE ==========
+☐ amethyst_ring.png           - Bague avec améthyste
+☐ amethyst_necklace.png       - Collier avec améthystes
+
+========== BIJOUX AVEC DIAMANT ==========
+☐ diamond_ring.png            - Bague avec diamant
+☐ diamond_necklace.png        - Collier avec diamants
+☐ diamond_earrings.png        - Boucles d'oreille avec diamants
+
+========== BIJOUX AVEC DIAMANT BLEU ==========
+☐ blue_diamond_ring.png       - Bague avec diamant bleu
+☐ blue_diamond_necklace.png   - Collier avec diamants bleus
+
+========================================
+TOTAL: 42 IMAGES
+========================================
+
+RESSOURCES POUR TROUVER DES IMAGES:
+- https://www.flaticon.com/
+- https://game-icons.net/
+- https://www.iconfinder.com/
+- Ou créer vos propres images avec Photoshop/GIMP
+
+CONSEIL: Gardez un style cohérent pour toutes les images!
