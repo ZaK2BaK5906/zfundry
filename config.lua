@@ -16,7 +16,7 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Fonderie"
         },
-        Position = vector3(1110.45, -2008.38, 35.47),
+        Position = vector3(2522.05, 4123.94, 38.77),
         Marker = {
             Type = 1,
             Size = {x = 1.5, y = 1.5, z = 0.5},
@@ -33,7 +33,7 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Bijouterie Fonderie"
         },
-        Position = vector3(1117.45, -2008.38, 35.47),
+        Position = vector3(2531.70, 4118.53, 38.96),
         Marker = {
             Type = 1,
             Size = {x = 1.5, y = 1.5, z = 0.5},
@@ -50,7 +50,7 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Point d'Exportation"
         },
-        Position = vector3(1124.45, -2008.38, 35.47),
+        Position = vector3(2538.45, 4113.38, 38.96),
         Marker = {
             Type = 1,
             Size = {x = 1.5, y = 1.5, z = 0.5},
@@ -67,8 +67,8 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Garage Fonderie"
         },
-        Position = vector3(1131.45, -2008.38, 35.47),
-        SpawnPoint = vector4(1135.0, -2008.0, 35.47, 90.0),
+        Position = vector3(2528.82, 4112.27, 38.87),
+        SpawnPoint = vector4(2531.7524, 4113.0405, 38.7625, 227.8244),
         Marker = {
             Type = 36,
             Size = {x = 1.5, y = 1.5, z = 0.5},
@@ -85,7 +85,7 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Bureau Patron"
         },
-        Position = vector3(1103.45, -2008.38, 35.47),
+        Position = vector3(2525.94, 4114.32, 38.65),
         Marker = {
             Type = 1,
             Size = {x = 1.5, y = 1.5, z = 0.5},
@@ -182,7 +182,7 @@ Config.FoundryRecipes = {
         amount = 1,
         requires = {
             {item = "steel_ingot", amount = 2},
-            {item = "scrap_metal", amount = 1}
+            {item = "scrapmetal", amount = 1}
         },
         requiredJob = "foundry",
         requiredGrade = 1
@@ -195,7 +195,7 @@ Config.FoundryRecipes = {
         requires = {
             {item = "steel_ingot", amount = 5},
             {item = "iron_ingot", amount = 3},
-            {item = "scrap_metal", amount = 2}
+            {item = "scrapmetal", amount = 2}
         },
         requiredJob = "foundry",
         requiredGrade = 2
@@ -278,7 +278,7 @@ Config.FoundryRecipes = {
             {item = "steel_ingot", amount = 8},
             {item = "iron_ingot", amount = 5},
             {item = "copper_ingot", amount = 3},
-            {item = "scrap_metal", amount = 4}
+            {item = "scrapmetal", amount = 4}
         },
         requiredJob = "foundry",
         requiredGrade = 2
@@ -328,7 +328,7 @@ Config.FoundryRecipes = {
         requires = {
             {item = "steel_ingot", amount = 2},
             {item = "iron_ingot", amount = 2},
-            {item = "scrap_metal", amount = 3}
+            {item = "scrapmetal", amount = 3}
         },
         requiredJob = "foundry",
         requiredGrade = 0
