@@ -2,8 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'ZFundry Team'
-description 'Script de Fonderie & Bijouterie avec UI personnalisée'
-version '1.0.0'
+description 'Script de Fonderie & Bijouterie avec UI personnalisée + ox_target'
+version '2.0.0'
 
 shared_scripts {
     '@es_extended/imports.lua',
@@ -11,8 +11,7 @@ shared_scripts {
 }
 
 client_scripts {
-    'client/main.lua',
-    'client/garage.lua'
+    'client/main.lua'
 }
 
 server_scripts {

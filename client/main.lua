@@ -1,12 +1,30 @@
 local ESX = exports['es_extended']:getSharedObject()
 local PlayerData = {}
 local isProcessing = false
-local currentZone = nil
+local targetSystem = nil
+
+-- Détection automatique du système de target
+Citizen.CreateThread(function()
+    if GetResourceState('ox_target') == 'started' then
+        targetSystem = 'ox_target'
+        print("^2[ZFundry]^7 ox_target détecté")
+    elseif GetResourceState('qtarget') == 'started' then
+        targetSystem = 'qtarget'
+        print("^2[ZFundry]^7 qtarget détecté")
+    elseif GetResourceState('qb-target') == 'started' then
+        targetSystem = 'qb-target'
+        print("^2[ZFundry]^7 qb-target détecté")
+    else
+        print("^1[ZFundry]^7 ERREUR: Aucun système de target détecté!")
+    end
+end)
 
 -- Initialisation
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
     PlayerData = xPlayer
+    Citizen.Wait(1000)
+    SetupTargets()
 end)
 
 RegisterNetEvent('esx:setJob')
@@ -31,82 +49,142 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Afficher les markers et gérer les interactions
-Citizen.CreateThread(function()
-    while true do
-        local sleep = 500
-        local playerPed = PlayerPedId()
-        local playerCoords = GetEntityCoords(playerPed)
+-- Configurer tous les targets
+function SetupTargets()
+    if not targetSystem then return end
 
-        for zoneName, zoneData in pairs(Config.Zones) do
-            if zoneName ~= 'Garage' then -- Le garage est géré séparément
-                local distance = #(playerCoords - zoneData.Position)
-
-                if distance < zoneData.Marker.DrawDistance then
-                    sleep = 0
-                    DrawMarker(
-                        zoneData.Marker.Type,
-                        zoneData.Position.x,
-                        zoneData.Position.y,
-                        zoneData.Position.z,
-                        0.0, 0.0, 0.0,
-                        0.0, 0.0, 0.0,
-                        zoneData.Marker.Size.x,
-                        zoneData.Marker.Size.y,
-                        zoneData.Marker.Size.z,
-                        zoneData.Marker.Color.r,
-                        zoneData.Marker.Color.g,
-                        zoneData.Marker.Color.b,
-                        100,
-                        false, true, 2, false, nil, nil, false
-                    )
-
-                    if distance < zoneData.Marker.InteractionDistance then
-                        currentZone = zoneName
-                        DrawText3D(zoneData.Position.x, zoneData.Position.y, zoneData.Position.z + 1.0, "~g~[E]~w~ Ouvrir le menu")
-
-                        if IsControlJustReleased(0, 38) then -- Touche E
-                            if zoneName == 'Foundry' then
-                                OpenFoundryMenu()
-                            elseif zoneName == 'Jewelry' then
-                                OpenJewelryMenu()
-                            elseif zoneName == 'Export' then
-                                OpenExportMenu()
-                            elseif zoneName == 'BossActions' then
-                                OpenBossActionsMenu()
-                            end
-                        end
-                    else
-                        if currentZone == zoneName then
-                            currentZone = nil
-                        end
-                    end
+    -- Target Fonderie
+    AddTargetZone('foundry_zone', Config.Zones.Foundry.Position, {
+        name = 'foundry_zone',
+        heading = 0.0,
+        debugPoly = false,
+        minZ = Config.Zones.Foundry.Position.z - 1.0,
+        maxZ = Config.Zones.Foundry.Position.z + 2.0
+    }, {
+        options = {
+            {
+                icon = 'fas fa-fire',
+                label = 'Ouvrir la Fonderie',
+                action = function()
+                    OpenFoundryMenu()
                 end
-            end
-        end
+            }
+        },
+        distance = 2.5
+    })
 
-        Citizen.Wait(sleep)
-    end
-end)
+    -- Target Bijouterie
+    AddTargetZone('jewelry_zone', Config.Zones.Jewelry.Position, {
+        name = 'jewelry_zone',
+        heading = 0.0,
+        debugPoly = false,
+        minZ = Config.Zones.Jewelry.Position.z - 1.0,
+        maxZ = Config.Zones.Jewelry.Position.z + 2.0
+    }, {
+        options = {
+            {
+                icon = 'fas fa-gem',
+                label = 'Ouvrir la Bijouterie',
+                action = function()
+                    OpenJewelryMenu()
+                end
+            }
+        },
+        distance = 2.5
+    })
 
--- Afficher du texte 3D
-function DrawText3D(x, y, z, text)
-    local onScreen, _x, _y = World3dToScreen2d(x, y, z)
-    local px, py, pz = table.unpack(GetGameplayCamCoords())
+    -- Target Export
+    AddTargetZone('export_zone', Config.Zones.Export.Position, {
+        name = 'export_zone',
+        heading = 0.0,
+        debugPoly = false,
+        minZ = Config.Zones.Export.Position.z - 1.0,
+        maxZ = Config.Zones.Export.Position.z + 2.0
+    }, {
+        options = {
+            {
+                icon = 'fas fa-shipping-fast',
+                label = 'Point d\'Exportation',
+                action = function()
+                    OpenExportMenu()
+                end
+            }
+        },
+        distance = 2.5
+    })
 
-    SetTextScale(0.35, 0.35)
-    SetTextFont(4)
-    SetTextProportional(1)
-    SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
-    SetTextCentre(1)
-    AddTextComponentString(text)
-    DrawText(_x, _y)
-    local factor = (string.len(text)) / 370
-    DrawRect(_x, _y + 0.0125, 0.015 + factor, 0.03, 0, 0, 0, 75)
+    -- Target Garage
+    AddTargetZone('garage_zone', Config.Zones.Garage.Position, {
+        name = 'garage_zone',
+        heading = 0.0,
+        debugPoly = false,
+        minZ = Config.Zones.Garage.Position.z - 1.0,
+        maxZ = Config.Zones.Garage.Position.z + 2.0
+    }, {
+        options = {
+            {
+                icon = 'fas fa-warehouse',
+                label = 'Ouvrir le Garage',
+                action = function()
+                    OpenGarageMenu()
+                end
+            }
+        },
+        distance = 3.0
+    })
+
+    -- Target Boss Actions
+    AddTargetZone('boss_zone', Config.Zones.BossActions.Position, {
+        name = 'boss_zone',
+        heading = 0.0,
+        debugPoly = false,
+        minZ = Config.Zones.BossActions.Position.z - 1.0,
+        maxZ = Config.Zones.BossActions.Position.z + 2.0
+    }, {
+        options = {
+            {
+                icon = 'fas fa-user-tie',
+                label = 'Actions Patron',
+                action = function()
+                    OpenBossActionsMenu()
+                end,
+                canInteract = function()
+                    return PlayerData.job and PlayerData.job.name == Config.Job and PlayerData.job.grade_name == 'boss'
+                end
+            }
+        },
+        distance = 2.5
+    })
+
+    print("^2[ZFundry]^7 Tous les targets ont été configurés!")
 end
 
--- Menu Fonderie
+-- Fonction universelle pour ajouter un target
+function AddTargetZone(name, coords, zoneData, options)
+    if targetSystem == 'ox_target' then
+        exports.ox_target:addBoxZone({
+            coords = coords,
+            size = vec3(2.0, 2.0, 2.0),
+            rotation = zoneData.heading or 0.0,
+            debug = zoneData.debugPoly or false,
+            options = options.options
+        })
+    elseif targetSystem == 'qtarget' or targetSystem == 'qb-target' then
+        local targetExport = targetSystem == 'qtarget' and exports.qtarget or exports['qb-target']
+        targetExport:AddBoxZone(name, coords, 2.0, 2.0, {
+            name = name,
+            heading = zoneData.heading or 0.0,
+            debugPoly = zoneData.debugPoly or false,
+            minZ = zoneData.minZ,
+            maxZ = zoneData.maxZ
+        }, {
+            options = options.options,
+            distance = options.distance
+        })
+    end
+end
+
+-- Menu Fonderie (UI Personnalisée)
 function OpenFoundryMenu()
     if PlayerData.job and PlayerData.job.name == Config.Job then
         local recipes = {}
@@ -138,17 +216,17 @@ function OpenFoundryMenu()
         -- Ouvrir l'UI NUI
         SetNuiFocus(true, true)
         SendNUIMessage({
-            action = 'openUI',
+            action = 'openCraftingUI',
             recipes = recipes,
-            title = 'Fonderie',
+            title = '🔥 Fonderie',
             menuType = 'foundry'
         })
     else
-        ShowNotification("~r~Vous ne travaillez pas ici!", 'error')
+        SendNotification("Vous ne travaillez pas ici!", 'error')
     end
 end
 
--- Menu Bijouterie
+-- Menu Bijouterie (UI Personnalisée)
 function OpenJewelryMenu()
     if PlayerData.job and PlayerData.job.name == Config.Job then
         local recipes = {}
@@ -180,13 +258,58 @@ function OpenJewelryMenu()
         -- Ouvrir l'UI NUI
         SetNuiFocus(true, true)
         SendNUIMessage({
-            action = 'openUI',
+            action = 'openCraftingUI',
             recipes = recipes,
-            title = 'Bijouterie',
+            title = '💎 Bijouterie',
             menuType = 'jewelry'
         })
     else
-        ShowNotification("~r~Vous ne travaillez pas ici!", 'error')
+        SendNotification("Vous ne travaillez pas ici!", 'error')
+    end
+end
+
+-- Menu Export (UI Personnalisée)
+function OpenExportMenu()
+    ESX.TriggerServerCallback('zfundry:getPlayerInventory', function(inventory)
+        if #inventory == 0 then
+            SendNotification("Vous n'avez rien à exporter!", 'error')
+            return
+        end
+
+        SetNuiFocus(true, true)
+        SendNUIMessage({
+            action = 'openExportUI',
+            items = inventory
+        })
+    end)
+end
+
+-- Menu Garage (UI Personnalisée)
+function OpenGarageMenu()
+    if PlayerData.job and PlayerData.job.name == Config.Job then
+        SetNuiFocus(true, true)
+        SendNUIMessage({
+            action = 'openGarageUI',
+            vehicles = Config.Vehicles
+        })
+    else
+        SendNotification("Vous ne travaillez pas pour la " .. Config.JobLabel .. "!", 'error')
+    end
+end
+
+-- Menu Boss Actions (UI Personnalisée)
+function OpenBossActionsMenu()
+    if PlayerData.job and PlayerData.job.name == Config.Job and PlayerData.job.grade_name == 'boss' then
+        ESX.TriggerServerCallback('zfundry:getBossData', function(data)
+            SetNuiFocus(true, true)
+            SendNUIMessage({
+                action = 'openBossUI',
+                societyMoney = data.money,
+                employees = data.employees
+            })
+        end)
+    else
+        SendNotification("Vous n'êtes pas le patron!", 'error')
     end
 end
 
@@ -200,94 +323,91 @@ RegisterNUICallback('craftItem', function(data, cb)
     cb('ok')
 end)
 
+RegisterNUICallback('sellItem', function(data, cb)
+    TriggerServerEvent('zfundry:sellItem', data.item, data.amount, data.price)
+    cb('ok')
+end)
+
+RegisterNUICallback('spawnVehicle', function(data, cb)
+    local model = data.model
+    local playerPed = PlayerPedId()
+    local spawnPoint = Config.Zones.Garage.SpawnPoint
+
+    ESX.Game.SpawnVehicle(model, vector3(spawnPoint.x, spawnPoint.y, spawnPoint.z), spawnPoint.w, function(vehicle)
+        TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+        SetVehicleNumberPlateText(vehicle, "FOUNDRY")
+
+        -- Clé du véhicule
+        if GetResourceState('wasabi_carlock') == 'started' then
+            exports.wasabi_carlock:GiveKey(GetVehicleNumberPlateText(vehicle))
+        elseif GetResourceState('qb-vehiclekeys') == 'started' then
+            TriggerEvent('vehiclekeys:client:SetOwner', GetVehicleNumberPlateText(vehicle))
+        end
+
+        -- Fuel
+        if GetResourceState('LegacyFuel') == 'started' then
+            exports['LegacyFuel']:SetFuel(vehicle, 100.0)
+        elseif GetResourceState('ox_fuel') == 'started' then
+            SetVehicleFuelLevel(vehicle, 100.0)
+        end
+
+        SendNotification("Véhicule sorti du garage!", 'success')
+    end)
+
+    cb('ok')
+end)
+
+RegisterNUICallback('storeVehicle', function(data, cb)
+    local playerPed = PlayerPedId()
+    local vehicle = GetVehiclePedIsIn(playerPed, false)
+
+    if vehicle == 0 then
+        SendNotification("Vous devez être dans un véhicule!", 'error')
+        cb('error')
+        return
+    end
+
+    local plate = GetVehicleNumberPlateText(vehicle)
+    if plate ~= "FOUNDRY" then
+        SendNotification("Ce véhicule n'appartient pas à la société!", 'error')
+        cb('error')
+        return
+    end
+
+    ESX.Game.DeleteVehicle(vehicle)
+    SendNotification("Véhicule rangé au garage!", 'success')
+    cb('ok')
+end)
+
+RegisterNUICallback('withdrawMoney', function(data, cb)
+    TriggerServerEvent('zfundry:withdrawMoney', data.amount)
+    cb('ok')
+end)
+
+RegisterNUICallback('depositMoney', function(data, cb)
+    TriggerServerEvent('zfundry:depositMoney', data.amount)
+    cb('ok')
+end)
+
 RegisterNUICallback('closeUI', function(data, cb)
     SetNuiFocus(false, false)
     cb('ok')
 end)
 
--- Menu Exportation
-function OpenExportMenu()
-    ESX.TriggerServerCallback('zfundry:getPlayerInventory', function(inventory)
-        local elements = {}
-
-        for _, item in ipairs(inventory) do
-            if Config.ExportPrices[item.name] then
-                local price = Config.ExportPrices[item.name]
-                table.insert(elements, {
-                    label = item.label .. " ~g~(" .. price .. "$ pièce) ~s~x" .. item.count,
-                    value = item.name,
-                    price = price,
-                    count = item.count
-                })
-            end
-        end
-
-        if #elements == 0 then
-            ShowNotification("~r~Vous n'avez rien à exporter!", 'error')
-            return
-        end
-
-        ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'export_menu', {
-            title = "Point d'Exportation",
-            align = 'top-left',
-            elements = elements
-        }, function(data, menu)
-            menu.close()
-            OpenExportAmountMenu(data.current.value, data.current.price, data.current.count)
-        end, function(data, menu)
-            menu.close()
-        end)
-    end)
-end
-
--- Menu quantité exportation
-function OpenExportAmountMenu(item, price, maxCount)
-    ESX.UI.Menu.Open('dialog', GetCurrentResourceName(), 'export_amount', {
-        title = "Combien voulez-vous en vendre? (Max: " .. maxCount .. ")"
-    }, function(data, menu)
-        local amount = tonumber(data.value)
-        if amount and amount > 0 and amount <= maxCount then
-            menu.close()
-            TriggerServerEvent('zfundry:sellItem', item, amount, price)
-        else
-            ShowNotification("~r~Quantité invalide!", 'error')
-        end
-    end, function(data, menu)
-        menu.close()
-    end)
-end
-
--- Menu Actions Patron
-function OpenBossActionsMenu()
-    if PlayerData.job and PlayerData.job.name == Config.Job and PlayerData.job.grade_name == 'boss' then
-        TriggerEvent('esx_society:openBossMenu', Config.Job, function(data, menu)
-            menu.close()
-        end, {wash = false})
-    else
-        ShowNotification("~r~Vous n'êtes pas le patron!", 'error')
-    end
-end
-
--- Notification personnalisée
-function ShowNotification(message, type)
-    if type == 'success' then
-        message = "~g~✓ " .. message
-    elseif type == 'error' then
-        message = "~r~✗ " .. message
-    elseif type == 'info' then
-        message = "~b~ℹ " .. message
-    end
-
-    BeginTextCommandThefeedPost("STRING")
-    AddTextComponentSubstringPlayerName(message)
-    EndTextCommandThefeedPostTicker(false, true)
+-- Notification personnalisée via NUI
+function SendNotification(message, type)
+    SendNUIMessage({
+        action = 'notify',
+        message = message,
+        type = type or 'info'
+    })
 end
 
 -- Event de crafting
 RegisterNetEvent('zfundry:startCrafting')
 AddEventHandler('zfundry:startCrafting', function(recipe, amount, craftType)
     if isProcessing then
-        ShowNotification("~r~Vous êtes déjà en train de fabriquer quelque chose!", 'error')
+        SendNotification("Vous êtes déjà en train de fabriquer quelque chose!", 'error')
         return
     end
 
@@ -296,49 +416,55 @@ AddEventHandler('zfundry:startCrafting', function(recipe, amount, craftType)
     local stepTime = 100
     local progress = 0
 
-    ShowNotification("~b~Fabrication de " .. amount .. "x " .. recipe.label .. " en cours...", 'info')
+    SendNotification("Fabrication de " .. amount .. "x " .. recipe.label .. " en cours...", 'info')
 
     -- Animation
     TaskStartScenarioInPlace(PlayerPedId(), "WORLD_HUMAN_WELDING", 0, true)
+
+    -- Barre de progression
+    SendNUIMessage({
+        action = 'showProgress',
+        duration = totalTime
+    })
 
     Citizen.CreateThread(function()
         while progress < totalTime and isProcessing do
             Citizen.Wait(stepTime)
             progress = progress + stepTime
-
-            -- Afficher la progression
-            local percentage = math.floor((progress / totalTime) * 100)
-            if percentage % 10 == 0 then
-                ShowNotification("~b~Progression: " .. percentage .. "%", 'info')
-            end
         end
 
         ClearPedTasksImmediately(PlayerPedId())
 
         if isProcessing then
-            ShowNotification("~g~Fabrication terminée!", 'success')
+            SendNotification("Fabrication terminée!", 'success')
             TriggerServerEvent('zfundry:finishCrafting', recipe, amount, craftType)
         end
+
+        SendNUIMessage({
+            action = 'hideProgress'
+        })
 
         isProcessing = false
     end)
 end)
 
--- Annuler le crafting si le joueur s'éloigne
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(1000)
-
-        if isProcessing and currentZone == nil then
-            isProcessing = false
-            ClearPedTasksImmediately(PlayerPedId())
-            ShowNotification("~r~Fabrication annulée! Vous vous êtes éloigné.", 'error')
-        end
-    end
-end)
-
 -- Event pour les notifications du serveur
 RegisterNetEvent('zfundry:notify')
 AddEventHandler('zfundry:notify', function(message, type)
-    ShowNotification(message, type)
+    SendNotification(message, type)
+end)
+
+-- Refresh UI après transaction
+RegisterNetEvent('zfundry:refreshBossUI')
+AddEventHandler('zfundry:refreshBossUI', function()
+    -- Rafraîchir les données du menu boss si ouvert
+    if PlayerData.job and PlayerData.job.name == Config.Job and PlayerData.job.grade_name == 'boss' then
+        ESX.TriggerServerCallback('zfundry:getBossData', function(data)
+            SendNUIMessage({
+                action = 'updateBossData',
+                societyMoney = data.money,
+                employees = data.employees
+            })
+        end)
+    end
 end)

@@ -1,229 +1,378 @@
-let currentRecipes = [];
-let currentRecipeData = null;
-let currentMenuType = '';
+// Variables globales
+let currentData = null;
+let currentUIType = null;
+let currentModalAction = null;
 
 // Écouter les messages de FiveM
 window.addEventListener('message', function(event) {
     const data = event.data;
 
-    if (data.action === 'openUI') {
-        openUI(data.recipes, data.title, data.menuType);
-    } else if (data.action === 'closeUI') {
-        closeUI();
-    } else if (data.action === 'notify') {
-        showNotification(data.message, data.type);
+    switch(data.action) {
+        case 'openCraftingUI':
+            openCraftingUI(data.recipes, data.title, data.menuType);
+            break;
+        case 'openGarageUI':
+            openGarageUI(data.vehicles);
+            break;
+        case 'openExportUI':
+            openExportUI(data.items);
+            break;
+        case 'openBossUI':
+            openBossUI(data.societyMoney, data.employees);
+            break;
+        case 'updateBossData':
+            updateBossData(data.societyMoney, data.employees);
+            break;
+        case 'notify':
+            showNotification(data.message, data.type);
+            break;
+        case 'showProgress':
+            showProgressBar(data.duration);
+            break;
+        case 'hideProgress':
+            hideProgressBar();
+            break;
     }
 });
 
-// Fermer l'UI avec Échap
+// Fermer avec Échap
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        closeUI();
-        closeQuantityModal();
+        closeAllUIs();
     }
 });
 
-// Ouvrir l'UI
-function openUI(recipes, title, menuType) {
-    currentRecipes = recipes;
-    currentMenuType = menuType;
+// Utilitaire
+function GetParentResourceName() {
+    if (window.location.href.includes('://nui_')) {
+        const match = window.location.href.match(/https?:\/\/nui_(.+?)\//);
+        return match ? match[1] : 'zfundry';
+    }
+    return 'zfundry';
+}
 
-    document.getElementById('menuTitle').textContent = title;
-    document.getElementById('foundryUI').style.display = 'flex';
-
+// CRAFTING UI
+function openCraftingUI(recipes, title, menuType) {
+    currentData = {recipes, menuType};
+    currentUIType = 'crafting';
+    
+    document.getElementById('craftingTitle').textContent = title;
     const recipesGrid = document.getElementById('recipesGrid');
     recipesGrid.innerHTML = '';
 
-    recipes.forEach((recipe, index) => {
-        const card = createRecipeCard(recipe, index);
+    recipes.forEach((recipe) => {
+        const card = document.createElement('div');
+        card.className = 'recipe-card' + (recipe.canCraft ? '' : ' disabled');
+        
+        const timeInSeconds = (recipe.time / 1000).toFixed(1);
+        let gradeBadge = recipe.requiredGrade !== undefined && recipe.requiredGrade > 0 
+            ? '<span class="grade-badge">Grade ' + recipe.requiredGrade + ' requis</span>' 
+            : '';
+        
+        let ingredientsHTML = '';
+        recipe.requires.forEach(ing => {
+            ingredientsHTML += '<div class="ingredient-item"><span>' + ing.item + '</span><span class="ingredient-amount">' + ing.amount + 'x</span></div>';
+        });
+
+        card.innerHTML = 
+            '<div class="recipe-header">' +
+                '<div class="recipe-name">' + recipe.label + '</div>' +
+                '<div class="recipe-time">⏱️ ' + timeInSeconds + 's</div>' +
+            '</div>' +
+            gradeBadge +
+            '<div class="recipe-ingredients">' +
+                '<div class="ingredient-title">Ingrédients requis:</div>' +
+                ingredientsHTML +
+            '</div>';
+
+        if (recipe.canCraft) {
+            card.addEventListener('click', () => openQuantityModal(recipe, 'craft'));
+        }
+
         recipesGrid.appendChild(card);
     });
 
-    // Focus sur le document pour permettre la fermeture avec Échap
-    document.body.focus();
+    document.getElementById('craftingUI').style.display = 'flex';
 }
 
-// Créer une carte de recette
-function createRecipeCard(recipe, index) {
-    const card = document.createElement('div');
-    card.className = 'recipe-card';
+// GARAGE UI
+function openGarageUI(vehicles) {
+    currentData = {vehicles};
+    currentUIType = 'garage';
+    document.getElementById('garageUI').style.display = 'flex';
+}
 
-    if (!recipe.canCraft) {
-        card.classList.add('disabled');
-    }
+function showVehiclesList() {
+    const list = document.getElementById('vehiclesList');
+    const vehicles = currentData.vehicles;
+    
+    list.innerHTML = '';
+    vehicles.forEach(vehicle => {
+        const card = document.createElement('div');
+        card.className = 'vehicle-card';
+        card.innerHTML = '<div class="btn-icon">🚗</div><div class="vehicle-name">' + vehicle.label + '</div>';
+        card.addEventListener('click', () => spawnVehicle(vehicle.model));
+        list.appendChild(card);
+    });
+    
+    list.style.display = 'grid';
+}
 
-    const timeInSeconds = (recipe.time / 1000).toFixed(1);
+function spawnVehicle(model) {
+    fetch('https://' + GetParentResourceName() + '/spawnVehicle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({model})
+    });
+    closeUI('garage');
+}
 
-    let gradeBadge = '';
-    if (recipe.requiredGrade !== undefined && recipe.requiredGrade > 0) {
-        gradeBadge = `<span class="grade-badge">Grade ${recipe.requiredGrade} requis</span>`;
-    }
+function storeVehicle() {
+    fetch('https://' + GetParentResourceName() + '/storeVehicle', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({})
+    });
+    closeUI('garage');
+}
 
-    let ingredientsHTML = '';
-    recipe.requires.forEach(ingredient => {
-        ingredientsHTML += `
-            <div class="ingredient-item">
-                <span>${ingredient.item}</span>
-                <span class="ingredient-amount">${ingredient.amount}x</span>
-            </div>
-        `;
+// EXPORT UI
+function openExportUI(items) {
+    currentData = {items};
+    currentUIType = 'export';
+    
+    const exportGrid = document.getElementById('exportGrid');
+    exportGrid.innerHTML = '';
+
+    items.forEach(item => {
+        const price = getExportPrice(item.name);
+        const card = document.createElement('div');
+        card.className = 'export-card';
+        card.innerHTML = 
+            '<div class="export-item-name">' + item.label + '</div>' +
+            '<div class="export-item-price">💰 $' + price + ' / pièce</div>' +
+            '<div class="export-item-count">Stock: ' + item.count + 'x</div>';
+        card.addEventListener('click', () => openQuantityModal({
+            name: item.name,
+            label: item.label,
+            price: price,
+            maxCount: item.count
+        }, 'export'));
+        exportGrid.appendChild(card);
     });
 
-    card.innerHTML = `
-        <div class="recipe-header">
-            <div class="recipe-name">${recipe.label}</div>
-            <div class="recipe-time">⏱️ ${timeInSeconds}s</div>
-        </div>
-        ${gradeBadge}
-        <div class="recipe-ingredients">
-            <div class="ingredient-title">Ingrédients requis:</div>
-            ${ingredientsHTML}
-        </div>
-    `;
-
-    if (recipe.canCraft) {
-        card.addEventListener('click', () => openQuantityModal(recipe, index));
-    }
-
-    return card;
+    document.getElementById('exportUI').style.display = 'flex';
 }
 
-// Ouvrir le modal de quantité
-function openQuantityModal(recipe, index) {
-    currentRecipeData = {recipe, index};
+function getExportPrice(itemName) {
+    const prices = {
+        iron_ingot: 150, steel_ingot: 300, copper_ingot: 200, gold_ingot: 800,
+        cut_quartz: 100, cut_emerald: 500, cut_ruby: 600, cut_pink_sapphire: 700,
+        cut_amethyst: 450, cut_diamond: 1200, cut_blue_diamond: 1800,
+        gold_ring_base: 600, gold_necklace_base: 1000, gold_earrings_base: 700,
+        emerald_ring: 1500, emerald_necklace: 2500, ruby_ring: 1700, ruby_necklace: 2800,
+        pink_sapphire_ring: 2000, pink_sapphire_necklace: 3200,
+        amethyst_ring: 1300, amethyst_necklace: 2200,
+        diamond_ring: 3000, diamond_necklace: 5000, diamond_earrings: 4000,
+        blue_diamond_ring: 4500, blue_diamond_necklace: 7500,
+        engine: 2500, turbo: 1800, suspension: 1200, brakes: 900, repair_kit: 400
+    };
+    return prices[itemName] || 100;
+}
 
-    document.getElementById('recipeLabel').textContent = recipe.label;
+// BOSS UI
+function openBossUI(societyMoney, employees) {
+    currentData = {societyMoney, employees};
+    currentUIType = 'boss';
+    
+    updateBossData(societyMoney, employees);
+    document.getElementById('bossUI').style.display = 'flex';
+}
+
+function updateBossData(societyMoney, employees) {
+    document.getElementById('societyMoney').textContent = '$' + societyMoney.toLocaleString();
+    
+    const employeesList = document.getElementById('employeesList');
+    employeesList.innerHTML = '';
+    
+    const grades = ['Apprenti', 'Ouvrier', 'Patron'];
+    employees.forEach(emp => {
+        const div = document.createElement('div');
+        div.className = 'employee-item';
+        div.innerHTML = 
+            '<span class="employee-name">' + emp.name + '</span>' +
+            '<span class="employee-grade">' + (grades[emp.grade] || 'Grade ' + emp.grade) + '</span>';
+        employeesList.appendChild(div);
+    });
+}
+
+function withdrawMoney() {
+    const amount = parseInt(document.getElementById('withdrawAmount').value);
+    if (amount && amount > 0) {
+        fetch('https://' + GetParentResourceName() + '/withdrawMoney', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({amount})
+        });
+        document.getElementById('withdrawAmount').value = '';
+    }
+}
+
+function depositMoney() {
+    const amount = parseInt(document.getElementById('depositAmount').value);
+    if (amount && amount > 0) {
+        fetch('https://' + GetParentResourceName() + '/depositMoney', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({amount})
+        });
+        document.getElementById('depositAmount').value = '';
+    }
+}
+
+// MODAL
+function openQuantityModal(data, action) {
+    currentModalAction = {data, action};
+    
+    document.getElementById('modalItemLabel').textContent = data.label;
     document.getElementById('quantityInput').value = 1;
-
-    updateIngredientsRequired(1);
-
+    
+    if (action === 'craft') {
+        updateIngredientsDisplay(data.requires, 1);
+    } else if (action === 'export') {
+        document.getElementById('ingredientsRequired').innerHTML = 
+            '<div style="text-align: center; color: #4caf50; font-size: 18px; font-weight: 600;">Prix total: $' + data.price + '</div>';
+    }
+    
     document.getElementById('quantityModal').style.display = 'flex';
 }
 
-// Fermer le modal de quantité
 function closeQuantityModal() {
     document.getElementById('quantityModal').style.display = 'none';
-    currentRecipeData = null;
+    currentModalAction = null;
 }
 
-// Augmenter la quantité
 function increaseQuantity() {
     const input = document.getElementById('quantityInput');
-    const currentValue = parseInt(input.value) || 1;
-    const newValue = Math.min(currentValue + 1, 999);
+    const newValue = Math.min(parseInt(input.value) + 1, 999);
     input.value = newValue;
-    updateIngredientsRequired(newValue);
+    updateQuantityDisplay(newValue);
 }
 
-// Diminuer la quantité
 function decreaseQuantity() {
     const input = document.getElementById('quantityInput');
-    const currentValue = parseInt(input.value) || 1;
-    const newValue = Math.max(currentValue - 1, 1);
+    const newValue = Math.max(parseInt(input.value) - 1, 1);
     input.value = newValue;
-    updateIngredientsRequired(newValue);
+    updateQuantityDisplay(newValue);
 }
 
-// Mettre à jour les ingrédients requis
-function updateIngredientsRequired(quantity) {
-    if (!currentRecipeData) return;
-
-    const {recipe} = currentRecipeData;
-    const container = document.getElementById('ingredientsRequired');
-
-    let html = '<div class="ingredient-req-title">Ingrédients requis (Total):</div>';
-
-    recipe.requires.forEach(ingredient => {
-        const totalAmount = ingredient.amount * quantity;
-        html += `
-            <div class="ingredient-req-item">
-                <span>${ingredient.item}</span>
-                <span class="ingredient-req-amount">${totalAmount}x</span>
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
-}
-
-// Input changé manuellement
 document.getElementById('quantityInput').addEventListener('input', function() {
-    let value = parseInt(this.value) || 1;
-    value = Math.max(1, Math.min(value, 999));
+    let value = Math.max(1, Math.min(parseInt(this.value) || 1, 999));
     this.value = value;
-    updateIngredientsRequired(value);
+    updateQuantityDisplay(value);
 });
 
-// Confirmer le crafting
-function confirmCraft() {
-    if (!currentRecipeData) return;
-
-    const quantity = parseInt(document.getElementById('quantityInput').value) || 1;
-    const {recipe, index} = currentRecipeData;
-
-    // Envoyer au client Lua
-    fetch(`https://${GetParentResourceName()}/craftItem`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            recipe: recipe,
-            amount: quantity,
-            menuType: currentMenuType
-        })
-    });
-
-    closeQuantityModal();
-    closeUI();
+function updateQuantityDisplay(quantity) {
+    if (!currentModalAction) return;
+    
+    if (currentModalAction.action === 'craft') {
+        updateIngredientsDisplay(currentModalAction.data.requires, quantity);
+    } else if (currentModalAction.action === 'export') {
+        const totalPrice = currentModalAction.data.price * quantity;
+        document.getElementById('ingredientsRequired').innerHTML = 
+            '<div style="text-align: center; color: #4caf50; font-size: 18px; font-weight: 600;">Prix total: $' + totalPrice.toLocaleString() + '</div>';
+    }
 }
 
-// Fermer l'UI
-function closeUI() {
-    document.getElementById('foundryUI').style.display = 'none';
-    currentRecipes = [];
+function updateIngredientsDisplay(requires, quantity) {
+    let html = '<div class="ingredient-req-title">Ingrédients requis (Total):</div>';
+    requires.forEach(ing => {
+        html += '<div class="ingredient-req-item"><span>' + ing.item + '</span><span class="ingredient-req-amount">' + (ing.amount * quantity) + 'x</span></div>';
+    });
+    document.getElementById('ingredientsRequired').innerHTML = html;
+}
 
-    // Notifier le client Lua
-    fetch(`https://${GetParentResourceName()}/closeUI`, {
+function confirmAction() {
+    if (!currentModalAction) return;
+    
+    const quantity = parseInt(document.getElementById('quantityInput').value);
+    const {data, action} = currentModalAction;
+    
+    if (action === 'craft') {
+        fetch('https://' + GetParentResourceName() + '/craftItem', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({recipe: data, amount: quantity, menuType: currentData.menuType})
+        });
+    } else if (action === 'export') {
+        fetch('https://' + GetParentResourceName() + '/sellItem', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({item: data.name, amount: quantity, price: data.price})
+        });
+    }
+    
+    closeQuantityModal();
+    closeAllUIs();
+}
+
+// FERMER UIs
+function closeUI(type) {
+    document.getElementById(type + 'UI').style.display = 'none';
+    fetch('https://' + GetParentResourceName() + '/closeUI', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({})
     });
 }
 
-// Afficher une notification
-function showNotification(message, type = 'info') {
+function closeAllUIs() {
+    ['crafting', 'garage', 'export', 'boss'].forEach(type => {
+        document.getElementById(type + 'UI').style.display = 'none';
+    });
+    closeQuantityModal();
+    fetch('https://' + GetParentResourceName() + '/closeUI', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({})
+    });
+}
+
+// NOTIFICATIONS
+function showNotification(message, type) {
     const container = document.getElementById('notificationContainer');
-
     const notification = document.createElement('div');
-    notification.className = `notification ${type}`;
-
-    notification.innerHTML = `
-        <div class="notification-icon"></div>
-        <div class="notification-message">${message}</div>
-    `;
-
+    notification.className = 'notification ' + (type || 'info');
+    notification.innerHTML = 
+        '<div class="notification-icon"></div>' +
+        '<div class="notification-message">' + message + '</div>';
     container.appendChild(notification);
-
-    // Retirer après 5 secondes
     setTimeout(() => {
         notification.style.animation = 'slideInRight 0.3s ease reverse';
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+        setTimeout(() => notification.remove(), 300);
     }, 5000);
 }
 
-// Obtenir le nom de la ressource
-function GetParentResourceName() {
-    let resourceName = 'zfundry';
-    if (window.location.href.includes('://nui_')) {
-        const match = window.location.href.match(/https?:\/\/nui_(.+?)\//);
-        if (match) {
-            resourceName = match[1];
+// PROGRESS BAR
+function showProgressBar(duration) {
+    const progressBar = document.getElementById('progressBar');
+    const progressFill = document.getElementById('progressFill');
+    
+    progressBar.style.display = 'block';
+    progressFill.style.width = '0%';
+    
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += 100;
+        const percentage = Math.min((progress / duration) * 100, 100);
+        progressFill.style.width = percentage + '%';
+        
+        if (progress >= duration) {
+            clearInterval(interval);
         }
-    }
-    return resourceName;
+    }, 100);
+}
+
+function hideProgressBar() {
+    document.getElementById('progressBar').style.display = 'none';
 }

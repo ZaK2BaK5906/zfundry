@@ -7,24 +7,95 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="foundryUI" class="ui-container" style="display: none;">
+    <!-- UI Crafting (Fonderie/Bijouterie) -->
+    <div id="craftingUI" class="ui-container" style="display: none;">
         <div class="ui-wrapper">
             <div class="ui-header">
-                <h1 class="ui-title">
-                    <span class="icon">🔥</span>
-                    <span id="menuTitle">Fonderie</span>
-                </h1>
-                <button class="close-btn" onclick="closeUI()">✕</button>
+                <h1 class="ui-title" id="craftingTitle">Fonderie</h1>
+                <button class="close-btn" onclick="closeUI('crafting')">✕</button>
             </div>
-
             <div class="ui-content">
-                <div class="recipes-grid" id="recipesGrid">
-                    <!-- Les recettes seront injectées ici -->
-                </div>
+                <div class="recipes-grid" id="recipesGrid"></div>
             </div>
-
             <div class="ui-footer">
                 <p class="hint">Cliquez sur une recette pour fabriquer</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Garage -->
+    <div id="garageUI" class="ui-container" style="display: none;">
+        <div class="ui-wrapper">
+            <div class="ui-header">
+                <h1 class="ui-title">🚗 Garage Fonderie</h1>
+                <button class="close-btn" onclick="closeUI('garage')">✕</button>
+            </div>
+            <div class="ui-content">
+                <div class="garage-actions">
+                    <button class="action-btn spawn-btn" onclick="showVehiclesList()">
+                        <span class="btn-icon">🚗</span>
+                        <span>Sortir un véhicule</span>
+                    </button>
+                    <button class="action-btn store-btn" onclick="storeVehicle()">
+                        <span class="btn-icon">🅿️</span>
+                        <span>Ranger le véhicule</span>
+                    </button>
+                </div>
+                <div id="vehiclesList" class="vehicles-grid" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Export -->
+    <div id="exportUI" class="ui-container" style="display: none;">
+        <div class="ui-wrapper">
+            <div class="ui-header">
+                <h1 class="ui-title">📦 Point d'Exportation</h1>
+                <button class="close-btn" onclick="closeUI('export')">✕</button>
+            </div>
+            <div class="ui-content">
+                <div class="export-grid" id="exportGrid"></div>
+            </div>
+            <div class="ui-footer">
+                <p class="hint">Sélectionnez un item pour le vendre</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- UI Boss -->
+    <div id="bossUI" class="ui-container" style="display: none;">
+        <div class="ui-wrapper">
+            <div class="ui-header">
+                <h1 class="ui-title">👔 Actions Patron</h1>
+                <button class="close-btn" onclick="closeUI('boss')">✕</button>
+            </div>
+            <div class="ui-content">
+                <div class="boss-container">
+                    <div class="society-money">
+                        <h2>💰 Argent de la Société</h2>
+                        <p class="money-amount" id="societyMoney">$0</p>
+                    </div>
+                    <div class="boss-actions">
+                        <div class="money-action">
+                            <h3>Retirer de l'argent</h3>
+                            <div class="input-group">
+                                <input type="number" id="withdrawAmount" placeholder="Montant" min="1">
+                                <button class="action-btn" onclick="withdrawMoney()">Retirer</button>
+                            </div>
+                        </div>
+                        <div class="money-action">
+                            <h3>Déposer de l'argent</h3>
+                            <div class="input-group">
+                                <input type="number" id="depositAmount" placeholder="Montant" min="1">
+                                <button class="action-btn" onclick="depositMoney()">Déposer</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="employees-list">
+                        <h2>👥 Employés</h2>
+                        <div id="employeesList"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,11 +104,11 @@
     <div id="quantityModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Quantité à fabriquer</h2>
+                <h2>Quantité</h2>
                 <button class="close-btn" onclick="closeQuantityModal()">✕</button>
             </div>
             <div class="modal-body">
-                <p id="recipeLabel" class="recipe-label"></p>
+                <p id="modalItemLabel" class="modal-label"></p>
                 <div class="quantity-controls">
                     <button class="qty-btn" onclick="decreaseQuantity()">-</button>
                     <input type="number" id="quantityInput" value="1" min="1" max="999">
@@ -47,7 +118,17 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-cancel" onclick="closeQuantityModal()">Annuler</button>
-                <button class="btn btn-confirm" onclick="confirmCraft()">Fabriquer</button>
+                <button class="btn btn-confirm" onclick="confirmAction()">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div id="progressBar" class="progress-bar" style="display: none;">
+        <div class="progress-content">
+            <div class="progress-label">Fabrication en cours...</div>
+            <div class="progress-fill-container">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
         </div>
     </div>
@@ -55,7 +136,6 @@
     <!-- Notifications -->
     <div id="notificationContainer" class="notification-container"></div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

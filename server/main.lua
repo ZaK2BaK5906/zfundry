@@ -141,6 +141,101 @@ AddEventHandler('zfundry:sellItem', function(itemName, amount, price)
     ))
 end)
 
+-- Callback: Obtenir les données du boss
+ESX.RegisterServerCallback('zfundry:getBossData', function(source, cb)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    if not xPlayer then
+        cb({money = 0, employees = {}})
+        return
+    end
+
+    TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. Config.Job, function(account)
+        local societyMoney = account and account.money or 0
+
+        -- Récupérer les employés
+        MySQL.Async.fetchAll('SELECT * FROM users WHERE job = @job ORDER BY job_grade DESC', {
+            ['@job'] = Config.Job
+        }, function(employees)
+            local employeesList = {}
+
+            for _, employee in ipairs(employees) do
+                table.insert(employeesList, {
+                    identifier = employee.identifier,
+                    name = employee.firstname .. ' ' .. employee.lastname,
+                    grade = employee.job_grade
+                })
+            end
+
+            cb({
+                money = societyMoney,
+                employees = employeesList
+            })
+        end)
+    end)
+end)
+
+-- Event: Retirer de l'argent de la société
+RegisterNetEvent('zfundry:withdrawMoney')
+AddEventHandler('zfundry:withdrawMoney', function(amount)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    if not xPlayer then return end
+
+    if xPlayer.job.name ~= Config.Job or xPlayer.job.grade_name ~= 'boss' then
+        TriggerClientEvent('zfundry:notify', source, "Vous n'êtes pas le patron!", 'error')
+        return
+    end
+
+    amount = tonumber(amount)
+    if not amount or amount <= 0 then
+        TriggerClientEvent('zfundry:notify', source, "Montant invalide!", 'error')
+        return
+    end
+
+    TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. Config.Job, function(account)
+        if account.money >= amount then
+            account.removeMoney(amount)
+            xPlayer.addMoney(amount)
+            TriggerClientEvent('zfundry:notify', source, "Vous avez retiré $" .. amount .. " de la société", 'success')
+            TriggerClientEvent('zfundry:refreshBossUI', source)
+
+            print(string.format("[ZFundry] %s a retiré $%d de la société", xPlayer.getName(), amount))
+        else
+            TriggerClientEvent('zfundry:notify', source, "La société n'a pas assez d'argent!", 'error')
+        end
+    end)
+end)
+
+-- Event: Déposer de l'argent dans la société
+RegisterNetEvent('zfundry:depositMoney')
+AddEventHandler('zfundry:depositMoney', function(amount)
+    local xPlayer = ESX.GetPlayerFromId(source)
+    if not xPlayer then return end
+
+    if xPlayer.job.name ~= Config.Job or xPlayer.job.grade_name ~= 'boss' then
+        TriggerClientEvent('zfundry:notify', source, "Vous n'êtes pas le patron!", 'error')
+        return
+    end
+
+    amount = tonumber(amount)
+    if not amount or amount <= 0 then
+        TriggerClientEvent('zfundry:notify', source, "Montant invalide!", 'error')
+        return
+    end
+
+    if xPlayer.getMoney() >= amount then
+        xPlayer.removeMoney(amount)
+        TriggerEvent('esx_addonaccount:getSharedAccount', 'society_' .. Config.Job, function(account)
+            account.addMoney(amount)
+            TriggerClientEvent('zfundry:notify', source, "Vous avez déposé $" .. amount .. " dans la société", 'success')
+            TriggerClientEvent('zfundry:refreshBossUI', source)
+
+            print(string.format("[ZFundry] %s a déposé $%d dans la société", xPlayer.getName(), amount))
+        end)
+    else
+        TriggerClientEvent('zfundry:notify', source, "Vous n'avez pas assez d'argent!", 'error')
+    end
+end)
+
 -- Commande pour donner le job (admin seulement)
 ESX.RegisterCommand('setfoundry', 'admin', function(xPlayer, args, showError)
     local targetPlayer = ESX.GetPlayerFromId(args.playerId)
