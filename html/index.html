@@ -3,99 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZFundry</title>
+    <title>ZFundry - Fonderie & Bijouterie</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- UI Crafting (Fonderie/Bijouterie) -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         UI CRAFTING (Fonderie/Bijouterie)
+         ═══════════════════════════════════════════════════════════════ -->
     <div id="craftingUI" class="ui-container" style="display: none;">
         <div class="ui-wrapper">
             <div class="ui-header">
-                <h1 class="ui-title" id="craftingTitle">Fonderie</h1>
-                <button class="close-btn" onclick="closeUI('crafting')">✕</button>
+                <h1 class="ui-title" id="craftingTitle">🔥 Fonderie</h1>
+                <button class="close-btn" onclick="closeAllUIs()">✕</button>
             </div>
             <div class="ui-content">
                 <div class="recipes-grid" id="recipesGrid"></div>
             </div>
-            <div class="ui-footer">
-                <p class="hint">Cliquez sur une recette pour fabriquer</p>
-            </div>
         </div>
     </div>
 
-    <!-- UI Garage -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         UI GARAGE
+         ═══════════════════════════════════════════════════════════════ -->
     <div id="garageUI" class="ui-container" style="display: none;">
         <div class="ui-wrapper">
             <div class="ui-header">
-                <h1 class="ui-title">🚗 Garage Fonderie</h1>
-                <button class="close-btn" onclick="closeUI('garage')">✕</button>
+                <h1 class="ui-title">🚗 Garage</h1>
+                <button class="close-btn" onclick="closeAllUIs()">✕</button>
             </div>
             <div class="ui-content">
                 <div class="garage-actions">
-                    <button class="action-btn spawn-btn" onclick="showVehiclesList()">
-                        <span class="btn-icon">🚗</span>
-                        <span>Sortir un véhicule</span>
-                    </button>
-                    <button class="action-btn store-btn" onclick="storeVehicle()">
-                        <span class="btn-icon">🅿️</span>
-                        <span>Ranger le véhicule</span>
-                    </button>
+                    <button class="btn-garage" onclick="storeVehicle()">🅿️ Ranger le véhicule</button>
                 </div>
-                <div id="vehiclesList" class="vehicles-grid" style="display: none;"></div>
+                <div class="vehicles-list" id="vehiclesList"></div>
             </div>
         </div>
     </div>
 
-    <!-- UI Export -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         UI EXPORT
+         ═══════════════════════════════════════════════════════════════ -->
     <div id="exportUI" class="ui-container" style="display: none;">
         <div class="ui-wrapper">
             <div class="ui-header">
-                <h1 class="ui-title">📦 Point d'Exportation</h1>
-                <button class="close-btn" onclick="closeUI('export')">✕</button>
+                <h1 class="ui-title">📦 Exportation</h1>
+                <button class="close-btn" onclick="closeAllUIs()">✕</button>
             </div>
             <div class="ui-content">
                 <div class="export-grid" id="exportGrid"></div>
             </div>
-            <div class="ui-footer">
-                <p class="hint">Sélectionnez un item pour le vendre</p>
-            </div>
         </div>
     </div>
 
-    <!-- Modal de quantité -->
-    <div id="quantityModal" class="modal" style="display: none;">
+    <!-- ═══════════════════════════════════════════════════════════════
+         MODAL QUANTITÉ
+         ═══════════════════════════════════════════════════════════════ -->
+    <div id="quantityModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Quantité</h2>
-                <button class="close-btn" onclick="closeQuantityModal()">✕</button>
+            <h2 class="modal-title" id="modalItemLabel">Item</h2>
+
+            <div class="quantity-selector">
+                <button class="qty-btn" onclick="decreaseQuantity()">-</button>
+                <input type="number" class="qty-input" id="quantityInput" value="1" min="1" max="999">
+                <button class="qty-btn" onclick="increaseQuantity()">+</button>
             </div>
-            <div class="modal-body">
-                <p id="modalItemLabel" class="modal-label"></p>
-                <div class="quantity-controls">
-                    <button class="qty-btn" onclick="decreaseQuantity()">-</button>
-                    <input type="number" id="quantityInput" value="1" min="1" max="999">
-                    <button class="qty-btn" onclick="increaseQuantity()">+</button>
-                </div>
-                <div class="ingredients-required" id="ingredientsRequired"></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-cancel" onclick="closeQuantityModal()">Annuler</button>
-                <button class="btn btn-confirm" onclick="confirmAction()">Confirmer</button>
+
+            <div class="ingredients-required" id="ingredientsRequired"></div>
+
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeQuantityModal()">Annuler</button>
+                <button class="btn-confirm" onclick="confirmAction()">Confirmer</button>
             </div>
         </div>
     </div>
 
-    <!-- Barre de progression -->
-    <div id="progressBar" class="progress-bar" style="display: none;">
-        <div class="progress-content">
-            <div class="progress-label">Fabrication en cours...</div>
-            <div class="progress-fill-container">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
+    <!-- ═══════════════════════════════════════════════════════════════
+         BARRE DE PROGRESSION
+         ═══════════════════════════════════════════════════════════════ -->
+    <div id="progressBar" class="progress-bar-container" style="display: none;">
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill"></div>
         </div>
     </div>
 
-    <!-- Notifications -->
+    <!-- ═══════════════════════════════════════════════════════════════
+         NOTIFICATIONS
+         ═══════════════════════════════════════════════════════════════ -->
     <div id="notificationContainer" class="notification-container"></div>
 
     <script src="script.js"></script>

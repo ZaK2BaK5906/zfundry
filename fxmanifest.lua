@@ -2,8 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'ZFundry Team'
-description 'Fonderie, Bijouterie & Marché des Lingots - Système complet avec UI tablette'
-version '3.0.0'
+description 'Fonderie, Bijouterie & Marché des Lingots - UI Moderne Glassmorphism v4.0'
+version '4.0.0'
 
 shared_scripts {
     '@es_extended/imports.lua',
