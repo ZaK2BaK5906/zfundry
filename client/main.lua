@@ -2,6 +2,7 @@ local ESX = exports['es_extended']:getSharedObject()
 local PlayerData = {}
 local isProcessing = false
 local targetSystem = nil
+local jobBlips = {} -- Blips restreints au job
 
 -- Détection automatique du système de target
 Citizen.CreateThread(function()
@@ -25,29 +26,61 @@ AddEventHandler('esx:playerLoaded', function(xPlayer)
     PlayerData = xPlayer
     Citizen.Wait(1000)
     SetupTargets()
+    RefreshJobBlips()
 end)
 
 RegisterNetEvent('esx:setJob')
 AddEventHandler('esx:setJob', function(job)
     PlayerData.job = job
+    RefreshJobBlips()
 end)
 
--- Créer les blips
+-- Créer le blip principal (visible pour tous)
 Citizen.CreateThread(function()
-    for zoneName, zoneData in pairs(Config.Zones) do
-        if zoneData.Blip and zoneData.Blip.Enabled then
-            local blip = AddBlipForCoord(zoneData.Position.x, zoneData.Position.y, zoneData.Position.z)
-            SetBlipSprite(blip, zoneData.Blip.Sprite)
-            SetBlipDisplay(blip, 4)
-            SetBlipScale(blip, zoneData.Blip.Scale)
-            SetBlipColour(blip, zoneData.Blip.Color)
-            SetBlipAsShortRange(blip, true)
-            BeginTextCommandSetBlipName("STRING")
-            AddTextComponentString(zoneData.Blip.Label)
-            EndTextCommandSetBlipName(blip)
-        end
+    local foundryZone = Config.Zones.Foundry
+    if foundryZone.Blip and foundryZone.Blip.Enabled then
+        local blip = AddBlipForCoord(foundryZone.Position.x, foundryZone.Position.y, foundryZone.Position.z)
+        SetBlipSprite(blip, foundryZone.Blip.Sprite)
+        SetBlipDisplay(blip, 4)
+        SetBlipScale(blip, foundryZone.Blip.Scale)
+        SetBlipColour(blip, foundryZone.Blip.Color)
+        SetBlipAsShortRange(blip, true)
+        BeginTextCommandSetBlipName("STRING")
+        AddTextComponentString(foundryZone.Blip.Label)
+        EndTextCommandSetBlipName(blip)
     end
 end)
+
+-- Rafraîchir les blips selon le job
+function RefreshJobBlips()
+    -- Supprimer les anciens blips
+    for _, blip in pairs(jobBlips) do
+        if DoesBlipExist(blip) then
+            RemoveBlip(blip)
+        end
+    end
+    jobBlips = {}
+
+    -- Créer les blips si le joueur a le bon job
+    if PlayerData.job and PlayerData.job.name == Config.Job then
+        for zoneName, zoneData in pairs(Config.Zones) do
+            -- Skip le blip principal (déjà créé pour tous)
+            if zoneName ~= 'Foundry' and zoneData.Blip and zoneData.Blip.Enabled then
+                local blip = AddBlipForCoord(zoneData.Position.x, zoneData.Position.y, zoneData.Position.z)
+                SetBlipSprite(blip, zoneData.Blip.Sprite)
+                SetBlipDisplay(blip, 4)
+                SetBlipScale(blip, zoneData.Blip.Scale)
+                SetBlipColour(blip, zoneData.Blip.Color)
+                SetBlipAsShortRange(blip, true)
+                BeginTextCommandSetBlipName("STRING")
+                AddTextComponentString(zoneData.Blip.Label)
+                EndTextCommandSetBlipName(blip)
+
+                jobBlips[zoneName] = blip
+            end
+        end
+    end
+end
 
 -- Configurer tous les targets
 function SetupTargets()

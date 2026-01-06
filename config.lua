@@ -13,7 +13,7 @@ Config.Zones = {
             Enabled = true,
             Sprite = 478,
             Color = 46,
-            Scale = 0.8,
+            Scale = 0.5,
             Label = "Fonderie"
         },
         Position = vector3(1110.45, -2008.38, 35.47),
@@ -30,7 +30,7 @@ Config.Zones = {
             Enabled = true,
             Sprite = 617,
             Color = 5,
-            Scale = 0.8,
+            Scale = 0.5,
             Label = "Bijouterie Fonderie"
         },
         Position = vector3(1117.45, -2008.38, 35.47),
@@ -47,7 +47,7 @@ Config.Zones = {
             Enabled = true,
             Sprite = 478,
             Color = 2,
-            Scale = 0.8,
+            Scale = 0.5,
             Label = "Point d'Exportation"
         },
         Position = vector3(1124.45, -2008.38, 35.47),
@@ -64,7 +64,7 @@ Config.Zones = {
             Enabled = true,
             Sprite = 50,
             Color = 46,
-            Scale = 0.8,
+            Scale = 0.5,
             Label = "Garage Fonderie"
         },
         Position = vector3(1131.45, -2008.38, 35.47),
@@ -78,6 +78,13 @@ Config.Zones = {
         }
     },
     BossActions = {
+        Blip = {
+            Enabled = true,
+            Sprite = 280,
+            Color = 46,
+            Scale = 0.5,
+            Label = "Bureau Patron"
+        },
         Position = vector3(1103.45, -2008.38, 35.47),
         Marker = {
             Type = 1,
