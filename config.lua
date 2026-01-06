@@ -16,14 +16,7 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Fonderie"
         },
-        Position = vector3(2522.05, 4123.94, 38.77),
-        Marker = {
-            Type = 1,
-            Size = {x = 1.5, y = 1.5, z = 0.5},
-            Color = {r = 255, g = 165, b = 0},
-            DrawDistance = 10.0,
-            InteractionDistance = 2.0
-        }
+        Position = vector3(2522.05, 4123.94, 38.77)
     },
     Jewelry = {
         Blip = {
@@ -33,14 +26,7 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Bijouterie Fonderie"
         },
-        Position = vector3(2531.70, 4118.53, 38.96),
-        Marker = {
-            Type = 1,
-            Size = {x = 1.5, y = 1.5, z = 0.5},
-            Color = {r = 255, g = 215, b = 0},
-            DrawDistance = 10.0,
-            InteractionDistance = 2.0
-        }
+        Position = vector3(2531.70, 4118.53, 38.96)
     },
     Export = {
         Blip = {
@@ -50,14 +36,7 @@ Config.Zones = {
             Scale = 0.5,
             Label = "Point d'Exportation"
         },
-        Position = vector3(2538.45, 4113.38, 38.96),
-        Marker = {
-            Type = 1,
-            Size = {x = 1.5, y = 1.5, z = 0.5},
-            Color = {r = 0, g = 255, b = 0},
-            DrawDistance = 10.0,
-            InteractionDistance = 2.0
-        }
+        Position = vector3(2538.45, 4113.38, 38.96)
     },
     Garage = {
         Blip = {
@@ -68,31 +47,7 @@ Config.Zones = {
             Label = "Garage Fonderie"
         },
         Position = vector3(2528.82, 4112.27, 38.87),
-        SpawnPoint = vector4(2531.7524, 4113.0405, 38.7625, 227.8244),
-        Marker = {
-            Type = 36,
-            Size = {x = 1.5, y = 1.5, z = 0.5},
-            Color = {r = 255, g = 165, b = 0},
-            DrawDistance = 10.0,
-            InteractionDistance = 3.0
-        }
-    },
-    BossActions = {
-        Blip = {
-            Enabled = true,
-            Sprite = 280,
-            Color = 46,
-            Scale = 0.5,
-            Label = "Bureau Patron"
-        },
-        Position = vector3(2525.94, 4114.32, 38.65),
-        Marker = {
-            Type = 1,
-            Size = {x = 1.5, y = 1.5, z = 0.5},
-            Color = {r = 255, g = 0, b = 0},
-            DrawDistance = 10.0,
-            InteractionDistance = 2.0
-        }
+        SpawnPoint = vector4(2531.7524, 4113.0405, 38.7625, 227.8244)
     }
 }
 
@@ -102,277 +57,121 @@ Config.Vehicles = {
     {label = 'Caracara 2', model = 'caracara2', price = 0, category = 'utility'}
 }
 
--- Recettes de Fonderie
+-- ═══════════════════════════════════════════════════════════════
+-- RECETTES DE FONDERIE
+-- ═══════════════════════════════════════════════════════════════
+
 Config.FoundryRecipes = {
-    -- Fonte des minerais de base
-    {
-        label = "Lingot de Fer",
-        item = "iron_ingot",
-        time = 5000,
-        amount = 1,
-        requires = {
-            {item = "iron_ore", amount = 2},
-            {item = "coal_ore", amount = 2}
-        }
-    },
+    -- ─────────────────────────────────────────────────────────
+    -- BARRES ET LINGOTS DE BASE
+    -- ─────────────────────────────────────────────────────────
     {
         label = "Barre d'Acier",
         item = "steel_bar",
-        time = 7000,
-        amount = 1,
-        requires = {
-            {item = "iron_ingot", amount = 2},
-            {item = "coal_ore", amount = 3},
-            {item = "scrapmetal", amount = 1}
-        }
-    },
-    {
-        label = "Lingot d'Acier",
-        item = "steel_ingot",
         time = 8000,
         amount = 1,
         requires = {
-            {item = "steel_bar", amount = 2},
-            {item = "coal_ore", amount = 1}
-        }
+            {item = "iron_ore", amount = 3},
+            {item = "coal_ore", amount = 2},
+            {item = "scrapmetal", amount = 1}
+        },
+        requiredGrade = 0
+    },
+
+    -- ─────────────────────────────────────────────────────────
+    -- LINGOTS D'INVESTISSEMENT (Pour le marché boursier)
+    -- ─────────────────────────────────────────────────────────
+    {
+        label = "Lingot d'Or",
+        item = "gold_ingot",
+        time = 12000,
+        amount = 1,
+        requires = {
+            {item = "gold_nugget", amount = 5},
+            {item = "gold_dust", amount = 3},
+            {item = "coal_ore", amount = 2}
+        },
+        requiredGrade = 0
+    },
+    {
+        label = "Lingot d'Argent",
+        item = "silver_ingot",
+        time = 10000,
+        amount = 1,
+        requires = {
+            {item = "quartz_crystal", amount = 4},
+            {item = "flint", amount = 2},
+            {item = "coal_ore", amount = 2}
+        },
+        requiredGrade = 0
+    },
+    {
+        label = "Lingot de Platine",
+        item = "platinum_ingot",
+        time = 15000,
+        amount = 1,
+        requires = {
+            {item = "clear_crystal", amount = 6},
+            {item = "graphite_chunk", amount = 3},
+            {item = "sulfur_chunk", amount = 2},
+            {item = "coal_ore", amount = 3}
+        },
+        requiredGrade = 1
     },
     {
         label = "Lingot de Cuivre",
         item = "copper_ingot",
-        time = 5000,
+        time = 6000,
         amount = 1,
         requires = {
-            {item = "sulfur_chunk", amount = 3},
+            {item = "copper_wire", amount = 5},
             {item = "coal_ore", amount = 1}
-        }
-    },
-    {
-        label = "Fil de Cuivre",
-        item = "copper_wire",
-        time = 4000,
-        amount = 2,
-        requires = {
-            {item = "copper_ingot", amount = 1}
-        }
-    },
-    {
-        label = "Lingot d'Or (Poussière)",
-        item = "gold_ingot",
-        time = 8000,
-        amount = 1,
-        requires = {
-            {item = "gold_dust", amount = 5}
-        }
-    },
-    {
-        label = "Lingot d'Or (Pépite)",
-        item = "gold_ingot",
-        time = 8000,
-        amount = 1,
-        requires = {
-            {item = "gold_nugget", amount = 3}
-        }
-    },
-
-    -- Items pour Hôpitaux
-    {
-        label = "Béquilles",
-        item = "crutches",
-        time = 6000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 2},
-            {item = "scrapmetal", amount = 1}
         },
-        requiredJob = "foundry",
-        requiredGrade = 1
-    },
-    {
-        label = "Fauteuil Roulant",
-        item = "wheelchair",
-        time = 12000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 5},
-            {item = "iron_ingot", amount = 3},
-            {item = "scrapmetal", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-    {
-        label = "Gilet Par-Balles (Médical)",
-        item = "bulletproof_vest_medical",
-        time = 10000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 4},
-            {item = "copper_ingot", amount = 2},
-            {item = "kevlar_fiber", amount = 3}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-
-    -- Items pour Forces de l'Ordre
-    {
-        label = "Gilet Par-Balles (Police)",
-        item = "bulletproof_vest_police",
-        time = 10000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 4},
-            {item = "copper_ingot", amount = 2},
-            {item = "kevlar_fiber", amount = 3}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-
-    -- Recyclage des armes illégales
-    {
-        label = "Recyclage Arme (Fer)",
-        item = "iron_ingot",
-        time = 8000,
-        amount = 3,
-        requires = {
-            {item = "confiscated_weapon", amount = 1}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 1
-    },
-    {
-        label = "Recyclage Arme (Acier)",
-        item = "steel_ingot",
-        time = 8000,
-        amount = 2,
-        requires = {
-            {item = "confiscated_weapon", amount = 1}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 1
-    },
-
-    -- Items pour Gouvernement
-    {
-        label = "Gilet Par-Balles (Gouvernement)",
-        item = "bulletproof_vest_gov",
-        time = 10000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 4},
-            {item = "copper_ingot", amount = 2},
-            {item = "kevlar_fiber", amount = 3}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-
-    -- Items pour Mécanos
-    {
-        label = "Moteur",
-        item = "engine",
-        time = 15000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 8},
-            {item = "iron_ingot", amount = 5},
-            {item = "copper_ingot", amount = 3},
-            {item = "scrapmetal", amount = 4}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-    {
-        label = "Turbo",
-        item = "turbo",
-        time = 12000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 6},
-            {item = "iron_ingot", amount = 4},
-            {item = "copper_ingot", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-    {
-        label = "Suspension",
-        item = "suspension",
-        time = 10000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 5},
-            {item = "iron_ingot", amount = 3}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 1
-    },
-    {
-        label = "Freins",
-        item = "brakes",
-        time = 8000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 4},
-            {item = "copper_ingot", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 1
-    },
-    {
-        label = "Kit de Réparation",
-        item = "repair_kit",
-        time = 6000,
-        amount = 1,
-        requires = {
-            {item = "steel_ingot", amount = 2},
-            {item = "iron_ingot", amount = 2},
-            {item = "scrapmetal", amount = 3}
-        },
-        requiredJob = "foundry",
         requiredGrade = 0
     }
 }
 
--- Recettes de Bijouterie
+-- ═══════════════════════════════════════════════════════════════
+-- RECETTES DE BIJOUTERIE
+-- ═══════════════════════════════════════════════════════════════
+
 Config.JewelryRecipes = {
-    -- Taille des pierres précieuses
-    {
-        label = "Quartz Taillé",
-        item = "cut_quartz",
-        time = 4000,
-        amount = 1,
-        requires = {
-            {item = "quartz_crystal", amount = 1}
-        }
-    },
+    -- ─────────────────────────────────────────────────────────
+    -- TAILLE DES PIERRES PRÉCIEUSES
+    -- ─────────────────────────────────────────────────────────
     {
         label = "Émeraude Taillée",
         item = "cut_emerald",
-        time = 6000,
+        time = 5000,
         amount = 1,
         requires = {
-            {item = "emerald_crystal", amount = 1}
-        }
+            {item = "emerald_crystal", amount = 1},
+            {item = "beryl_chunk", amount = 1},
+            {item = "green_garnet", amount = 1}
+        },
+        requiredGrade = 0
     },
     {
         label = "Rubis Taillé",
         item = "cut_ruby",
-        time = 6000,
+        time = 5000,
         amount = 1,
         requires = {
-            {item = "ruby_crystal", amount = 1}
-        }
+            {item = "ruby_crystal", amount = 1},
+            {item = "corundum_chunk", amount = 1}
+        },
+        requiredGrade = 0
     },
     {
-        label = "Saphir Rose Taillé",
-        item = "cut_pink_sapphire",
-        time = 7000,
+        label = "Saphir Taillé",
+        item = "cut_sapphire",
+        time = 5000,
         amount = 1,
         requires = {
-            {item = "pink_sapphire", amount = 1}
-        }
+            {item = "pink_sapphire", amount = 1},
+            {item = "corundum_chunk", amount = 1}
+        },
+        requiredGrade = 0
     },
     {
         label = "Améthyste Taillée",
@@ -380,17 +179,22 @@ Config.JewelryRecipes = {
         time = 5000,
         amount = 1,
         requires = {
-            {item = "amethyst_geode", amount = 1}
-        }
+            {item = "amethyst_geode", amount = 1},
+            {item = "purple_quartz", amount = 1}
+        },
+        requiredGrade = 0
     },
     {
         label = "Diamant Taillé",
         item = "cut_diamond",
-        time = 10000,
+        time = 8000,
         amount = 1,
         requires = {
-            {item = "diamond_crystal", amount = 1}
-        }
+            {item = "diamond_crystal", amount = 1},
+            {item = "clear_crystal", amount = 1},
+            {item = "graphite_chunk", amount = 1}
+        },
+        requiredGrade = 0
     },
     {
         label = "Diamant Bleu Taillé",
@@ -398,289 +202,154 @@ Config.JewelryRecipes = {
         time = 12000,
         amount = 1,
         requires = {
-            {item = "blue_diamond", amount = 1}
-        }
-    },
-
-    -- Fabrication de bijoux en or
-    {
-        label = "Bague en Or",
-        item = "gold_ring_base",
-        time = 5000,
-        amount = 1,
-        requires = {
-            {item = "gold_ingot", amount = 1}
+            {item = "blue_diamond", amount = 1},
+            {item = "diamond_crystal", amount = 2},
+            {item = "clear_crystal", amount = 2}
         },
-        requiredJob = "foundry",
         requiredGrade = 1
     },
+
+    -- ─────────────────────────────────────────────────────────
+    -- BIJOUX EN OR (Bases)
+    -- ─────────────────────────────────────────────────────────
     {
-        label = "Collier en Or",
-        item = "gold_necklace_base",
+        label = "Bague en Or",
+        item = "gold_ring",
         time = 6000,
         amount = 1,
         requires = {
-            {item = "gold_ingot", amount = 2}
+            {item = "gold_ingot", amount = 1},
+            {item = "gold_nugget", amount = 2}
         },
-        requiredJob = "foundry",
-        requiredGrade = 1
+        requiredGrade = 0
     },
     {
-        label = "Boucles d'Oreille en Or",
-        item = "gold_earrings_base",
-        time = 5000,
+        label = "Collier en Or",
+        item = "gold_necklace",
+        time = 8000,
         amount = 1,
         requires = {
-            {item = "gold_ingot", amount = 1}
+            {item = "gold_ingot", amount = 1},
+            {item = "gold_nugget", amount = 3},
+            {item = "copper_wire", amount = 1}
         },
-        requiredJob = "foundry",
-        requiredGrade = 1
+        requiredGrade = 0
     },
 
-    -- Bijoux avec pierres précieuses - Émeraude (Vert)
+    -- ─────────────────────────────────────────────────────────
+    -- BIJOUX EN OR AVEC PIERRES
+    -- ─────────────────────────────────────────────────────────
     {
         label = "Bague Émeraude",
         item = "emerald_ring",
-        time = 8000,
-        amount = 1,
-        requires = {
-            {item = "gold_ring_base", amount = 1},
-            {item = "cut_emerald", amount = 1}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-    {
-        label = "Collier Émeraude",
-        item = "emerald_necklace",
-        time = 9000,
-        amount = 1,
-        requires = {
-            {item = "gold_necklace_base", amount = 1},
-            {item = "cut_emerald", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-
-    -- Bijoux avec pierres précieuses - Rubis (Rouge)
-    {
-        label = "Bague Rubis",
-        item = "ruby_ring",
-        time = 8000,
-        amount = 1,
-        requires = {
-            {item = "gold_ring_base", amount = 1},
-            {item = "cut_ruby", amount = 1}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-    {
-        label = "Collier Rubis",
-        item = "ruby_necklace",
-        time = 9000,
-        amount = 1,
-        requires = {
-            {item = "gold_necklace_base", amount = 1},
-            {item = "cut_ruby", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-
-    -- Bijoux avec pierres précieuses - Saphir Rose (Rose)
-    {
-        label = "Bague Saphir Rose",
-        item = "pink_sapphire_ring",
-        time = 9000,
-        amount = 1,
-        requires = {
-            {item = "gold_ring_base", amount = 1},
-            {item = "cut_pink_sapphire", amount = 1}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-    {
-        label = "Collier Saphir Rose",
-        item = "pink_sapphire_necklace",
         time = 10000,
         amount = 1,
         requires = {
-            {item = "gold_necklace_base", amount = 1},
-            {item = "cut_pink_sapphire", amount = 2}
+            {item = "gold_ring", amount = 1},
+            {item = "cut_emerald", amount = 1}
         },
-        requiredJob = "foundry",
-        requiredGrade = 2
+        requiredGrade = 0
     },
-
-    -- Bijoux avec pierres précieuses - Améthyste (Violet)
+    {
+        label = "Bague Rubis",
+        item = "ruby_ring",
+        time = 10000,
+        amount = 1,
+        requires = {
+            {item = "gold_ring", amount = 1},
+            {item = "cut_ruby", amount = 1}
+        },
+        requiredGrade = 0
+    },
+    {
+        label = "Bague Saphir",
+        item = "sapphire_ring",
+        time = 10000,
+        amount = 1,
+        requires = {
+            {item = "gold_ring", amount = 1},
+            {item = "cut_sapphire", amount = 1}
+        },
+        requiredGrade = 0
+    },
     {
         label = "Bague Améthyste",
         item = "amethyst_ring",
-        time = 8000,
+        time = 10000,
         amount = 1,
         requires = {
-            {item = "gold_ring_base", amount = 1},
+            {item = "gold_ring", amount = 1},
             {item = "cut_amethyst", amount = 1}
         },
-        requiredJob = "foundry",
-        requiredGrade = 2
+        requiredGrade = 0
     },
-    {
-        label = "Collier Améthyste",
-        item = "amethyst_necklace",
-        time = 9000,
-        amount = 1,
-        requires = {
-            {item = "gold_necklace_base", amount = 1},
-            {item = "cut_amethyst", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-
-    -- Bijoux avec pierres précieuses - Diamant (Blanc)
     {
         label = "Bague Diamant",
         item = "diamond_ring",
-        time = 12000,
+        time = 15000,
         amount = 1,
         requires = {
-            {item = "gold_ring_base", amount = 1},
+            {item = "gold_ring", amount = 1},
             {item = "cut_diamond", amount = 1}
         },
-        requiredJob = "foundry",
-        requiredGrade = 2
+        requiredGrade = 1
     },
     {
         label = "Collier Diamant",
         item = "diamond_necklace",
-        time = 14000,
+        time = 18000,
         amount = 1,
         requires = {
-            {item = "gold_necklace_base", amount = 1},
-            {item = "cut_diamond", amount = 2}
+            {item = "gold_necklace", amount = 1},
+            {item = "cut_diamond", amount = 3}
         },
-        requiredJob = "foundry",
-        requiredGrade = 2
+        requiredGrade = 1
     },
-    {
-        label = "Boucles d'Oreille Diamant",
-        item = "diamond_earrings",
-        time = 13000,
-        amount = 1,
-        requires = {
-            {item = "gold_earrings_base", amount = 1},
-            {item = "cut_diamond", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-
-    -- Bijoux avec pierres précieuses - Diamant Bleu (Bleu)
     {
         label = "Bague Diamant Bleu",
         item = "blue_diamond_ring",
-        time = 15000,
+        time = 20000,
         amount = 1,
         requires = {
-            {item = "gold_ring_base", amount = 1},
+            {item = "gold_ring", amount = 1},
             {item = "cut_blue_diamond", amount = 1}
         },
-        requiredJob = "foundry",
-        requiredGrade = 2
-    },
-    {
-        label = "Collier Diamant Bleu",
-        item = "blue_diamond_necklace",
-        time = 17000,
-        amount = 1,
-        requires = {
-            {item = "gold_necklace_base", amount = 1},
-            {item = "cut_blue_diamond", amount = 2}
-        },
-        requiredJob = "foundry",
-        requiredGrade = 2
+        requiredGrade = 1
     }
 }
 
--- Prix d'exportation (en $)
+-- ═══════════════════════════════════════════════════════════════
+-- PRIX D'EXPORT
+-- ═══════════════════════════════════════════════════════════════
+
 Config.ExportPrices = {
-    -- Lingots
-    iron_ingot = 150,
-    steel_ingot = 300,
-    copper_ingot = 200,
-    gold_ingot = 800,
+    -- Barres et lingots de base
+    steel_bar = 500,
+
+    -- Lingots d'investissement (prix fixes pour l'export, le marché utilise son propre système)
+    gold_ingot = 8000,
+    silver_ingot = 2000,
+    platinum_ingot = 12000,
+    copper_ingot = 600,
 
     -- Pierres taillées
-    cut_quartz = 100,
-    cut_emerald = 500,
-    cut_ruby = 600,
-    cut_pink_sapphire = 700,
-    cut_amethyst = 450,
-    cut_diamond = 1200,
-    cut_blue_diamond = 1800,
+    cut_emerald = 800,
+    cut_ruby = 900,
+    cut_sapphire = 850,
+    cut_amethyst = 750,
+    cut_diamond = 1500,
+    cut_blue_diamond = 2500,
 
-    -- Bijoux de base
-    gold_ring_base = 600,
-    gold_necklace_base = 1000,
-    gold_earrings_base = 700,
-
-    -- Bijoux avec pierres - Émeraude
-    emerald_ring = 1500,
-    emerald_necklace = 2500,
-
-    -- Bijoux avec pierres - Rubis
-    ruby_ring = 1700,
-    ruby_necklace = 2800,
-
-    -- Bijoux avec pierres - Saphir Rose
-    pink_sapphire_ring = 2000,
-    pink_sapphire_necklace = 3200,
-
-    -- Bijoux avec pierres - Améthyste
-    amethyst_ring = 1300,
-    amethyst_necklace = 2200,
-
-    -- Bijoux avec pierres - Diamant
-    diamond_ring = 3000,
-    diamond_necklace = 5000,
-    diamond_earrings = 4000,
-
-    -- Bijoux avec pierres - Diamant Bleu
-    blue_diamond_ring = 4500,
-    blue_diamond_necklace = 7500,
-
-    -- Items pour véhicules
-    engine = 2500,
-    turbo = 1800,
-    suspension = 1200,
-    brakes = 900,
-    repair_kit = 400
-}
-
--- Items exportables (liste des items qu'on peut vendre)
-Config.ExportableItems = {
-    -- Lingots
-    'iron_ingot', 'steel_ingot', 'copper_ingot', 'gold_ingot',
-
-    -- Pierres taillées
-    'cut_quartz', 'cut_emerald', 'cut_ruby', 'cut_pink_sapphire',
-    'cut_amethyst', 'cut_diamond', 'cut_blue_diamond',
-
-    -- Bijoux de base
-    'gold_ring_base', 'gold_necklace_base', 'gold_earrings_base',
+    -- Bijoux bases
+    gold_ring = 1200,
+    gold_necklace = 1800,
 
     -- Bijoux avec pierres
-    'emerald_ring', 'emerald_necklace',
-    'ruby_ring', 'ruby_necklace',
-    'pink_sapphire_ring', 'pink_sapphire_necklace',
-    'amethyst_ring', 'amethyst_necklace',
-    'diamond_ring', 'diamond_necklace', 'diamond_earrings',
-    'blue_diamond_ring', 'blue_diamond_necklace',
-
-    -- Items pour véhicules
-    'engine', 'turbo', 'suspension', 'brakes', 'repair_kit'
+    emerald_ring = 2200,
+    ruby_ring = 2400,
+    sapphire_ring = 2300,
+    amethyst_ring = 2000,
+    diamond_ring = 3500,
+    diamond_necklace = 6000,
+    blue_diamond_ring = 5500
 }

@@ -5,65 +5,60 @@ let currentModalAction = null;
 
 // Mapping des items vers leurs labels
 const itemLabels = {
-    // Minerais bruts
+    // Matériaux de base
+    scrapmetal: 'Ferraille',
     iron_ore: 'Minerai de Fer',
-    copper_ore: 'Minerai de Cuivre',
-    gold_ore: 'Minerai d\'Or',
-    silver_ore: 'Minerai d\'Argent',
-    quartz: 'Quartz Brut',
-    emerald: 'Émeraude Brute',
-    ruby: 'Rubis Brut',
-    pink_sapphire: 'Saphir Rose Brut',
-    amethyst: 'Améthyste Brute',
-    diamond: 'Diamant Brut',
-    blue_diamond: 'Diamant Bleu Brut',
+    coal_ore: 'Charbon',
+    flint: 'Silex',
+    sulfur_chunk: 'Soufre',
+    copper_wire: 'Fil de Cuivre',
 
-    // Lingots (métaux fondus)
-    iron_ingot: 'Lingot de Fer',
-    steel_ingot: 'Lingot d\'Acier',
-    copper_ingot: 'Lingot de Cuivre',
+    // Métaux précieux bruts
+    gold_nugget: 'Pépite d\'Or',
+    gold_dust: 'Poussière d\'Or',
+
+    // Cristaux et pierres précieuses
+    quartz_crystal: 'Cristal de Quartz',
+    emerald_crystal: 'Cristal d\'Émeraude',
+    beryl_chunk: 'Béryl',
+    green_garnet: 'Grenat Vert',
+    ruby_crystal: 'Cristal de Rubis',
+    corundum_chunk: 'Corindon',
+    pink_sapphire: 'Saphir Rose',
+    amethyst_geode: 'Géode d\'Améthyste',
+    purple_quartz: 'Quartz Violet',
+    clear_crystal: 'Cristal Clair',
+    diamond_crystal: 'Cristal de Diamant',
+    graphite_chunk: 'Graphite',
+    blue_diamond: 'Diamant Bleu',
+
+    // Matériaux transformés
+    steel_bar: 'Barre d\'Acier',
+
+    // Lingots d'investissement
     gold_ingot: 'Lingot d\'Or',
     silver_ingot: 'Lingot d\'Argent',
+    platinum_ingot: 'Lingot de Platine',
+    copper_ingot: 'Lingot de Cuivre',
 
     // Pierres précieuses taillées
-    cut_quartz: 'Quartz Taillé',
     cut_emerald: 'Émeraude Taillée',
     cut_ruby: 'Rubis Taillé',
-    cut_pink_sapphire: 'Saphir Rose Taillé',
+    cut_sapphire: 'Saphir Taillé',
     cut_amethyst: 'Améthyste Taillée',
     cut_diamond: 'Diamant Taillé',
     cut_blue_diamond: 'Diamant Bleu Taillé',
 
-    // Bases de bijoux en or
-    gold_ring_base: 'Anneau en Or',
-    gold_necklace_base: 'Collier en Or',
-    gold_earrings_base: 'Boucles d\'Oreilles en Or',
-
-    // Bases de bijoux en argent
-    silver_ring_base: 'Anneau en Argent',
-    silver_necklace_base: 'Collier en Argent',
-    silver_earrings_base: 'Boucles d\'Oreilles en Argent',
-
-    // Bijoux en or avec pierres
+    // Bijoux finis
+    gold_ring: 'Bague en Or',
+    gold_necklace: 'Collier en Or',
     emerald_ring: 'Bague Émeraude',
-    emerald_necklace: 'Collier Émeraude',
     ruby_ring: 'Bague Rubis',
-    ruby_necklace: 'Collier Rubis',
-    pink_sapphire_ring: 'Bague Saphir Rose',
-    pink_sapphire_necklace: 'Collier Saphir Rose',
+    sapphire_ring: 'Bague Saphir',
     amethyst_ring: 'Bague Améthyste',
-    amethyst_necklace: 'Collier Améthyste',
     diamond_ring: 'Bague Diamant',
     diamond_necklace: 'Collier Diamant',
-    diamond_earrings: 'Boucles Diamant',
-    blue_diamond_ring: 'Bague Diamant Bleu',
-    blue_diamond_necklace: 'Collier Diamant Bleu',
-
-    // Bijoux en argent avec pierres
-    silver_emerald_ring: 'Bague Argent Émeraude',
-    silver_ruby_ring: 'Bague Argent Rubis',
-    silver_amethyst_ring: 'Bague Argent Améthyste',
-    silver_diamond_ring: 'Bague Argent Diamant'
+    blue_diamond_ring: 'Bague Diamant Bleu'
 };
 
 function getItemLabel(itemName) {
@@ -227,16 +222,35 @@ function openExportUI(items) {
 
 function getExportPrice(itemName) {
     const prices = {
-        iron_ingot: 150, steel_ingot: 300, copper_ingot: 200, gold_ingot: 800,
-        cut_quartz: 100, cut_emerald: 500, cut_ruby: 600, cut_pink_sapphire: 700,
-        cut_amethyst: 450, cut_diamond: 1200, cut_blue_diamond: 1800,
-        gold_ring_base: 600, gold_necklace_base: 1000, gold_earrings_base: 700,
-        emerald_ring: 1500, emerald_necklace: 2500, ruby_ring: 1700, ruby_necklace: 2800,
-        pink_sapphire_ring: 2000, pink_sapphire_necklace: 3200,
-        amethyst_ring: 1300, amethyst_necklace: 2200,
-        diamond_ring: 3000, diamond_necklace: 5000, diamond_earrings: 4000,
-        blue_diamond_ring: 4500, blue_diamond_necklace: 7500,
-        engine: 2500, turbo: 1800, suspension: 1200, brakes: 900, repair_kit: 400
+        // Barres et lingots de base
+        steel_bar: 500,
+
+        // Lingots d'investissement
+        gold_ingot: 8000,
+        silver_ingot: 2000,
+        platinum_ingot: 12000,
+        copper_ingot: 600,
+
+        // Pierres taillées
+        cut_emerald: 800,
+        cut_ruby: 900,
+        cut_sapphire: 850,
+        cut_amethyst: 750,
+        cut_diamond: 1500,
+        cut_blue_diamond: 2500,
+
+        // Bijoux bases
+        gold_ring: 1200,
+        gold_necklace: 1800,
+
+        // Bijoux avec pierres
+        emerald_ring: 2200,
+        ruby_ring: 2400,
+        sapphire_ring: 2300,
+        amethyst_ring: 2000,
+        diamond_ring: 3500,
+        diamond_necklace: 6000,
+        blue_diamond_ring: 5500
     };
     return prices[itemName] || 100;
 }
