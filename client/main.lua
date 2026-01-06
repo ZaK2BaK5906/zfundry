@@ -429,11 +429,8 @@ RegisterNUICallback('storeVehicle', function(data, cb)
 end)
 
 RegisterNUICallback('closeUI', function(data, cb)
-    cb('ok')
-    -- Petit délai pour éviter le freeze
-    Citizen.Wait(50)
     SetNuiFocus(false, false)
-    SetNuiFocusKeepInput(false)
+    cb('ok')
 end)
 
 -- Notification personnalisée via NUI

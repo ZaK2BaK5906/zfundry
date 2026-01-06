@@ -22,10 +22,9 @@ AddEventHandler('zfundry:sellAllExportable', function()
     local totalEarned = 0
     local itemsSold = {}
 
-    for _, itemName in ipairs(Config.ExportableItems) do
+    for itemName, price in pairs(Config.ExportPrices) do
         local item = xPlayer.getInventoryItem(itemName)
         if item and item.count > 0 then
-            local price = Config.ExportPrices[itemName] or 0
             local earnings = price * item.count
 
             xPlayer.removeInventoryItem(itemName, item.count)

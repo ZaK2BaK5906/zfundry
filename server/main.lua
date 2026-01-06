@@ -83,7 +83,7 @@ ESX.RegisterServerCallback('zfundry:getPlayerInventory', function(source, cb)
 
     local inventory = {}
 
-    for _, itemName in ipairs(Config.ExportableItems) do
+    for itemName, _ in pairs(Config.ExportPrices) do
         local item = xPlayer.getInventoryItem(itemName)
         if item and item.count > 0 then
             table.insert(inventory, {
@@ -260,4 +260,6 @@ end, true, {
 print("^2[ZFundry]^7 Script de Fonderie & Bijouterie chargé avec succès!")
 print("^2[ZFundry]^7 " .. #Config.FoundryRecipes .. " recettes de fonderie disponibles")
 print("^2[ZFundry]^7 " .. #Config.JewelryRecipes .. " recettes de bijouterie disponibles")
-print("^2[ZFundry]^7 " .. #Config.ExportableItems .. " items exportables")
+local exportCount = 0
+for _ in pairs(Config.ExportPrices) do exportCount = exportCount + 1 end
+print("^2[ZFundry]^7 " .. exportCount .. " items exportables")
