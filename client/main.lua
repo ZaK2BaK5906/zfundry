@@ -3,29 +3,43 @@ local PlayerData = {}
 local isProcessing = false
 local targetSystem = nil
 local jobBlips = {} -- Blips restreints au job
+local targetsSetup = false
 
--- Détection automatique du système de target
-Citizen.CreateThread(function()
+-- Détection automatique du système de target (synchrone)
+function DetectTargetSystem()
     if GetResourceState('ox_target') == 'started' then
-        targetSystem = 'ox_target'
-        print("^2[ZFundry]^7 ox_target détecté")
+        print("^2[ZFundry]^7 ✓ ox_target détecté!")
+        return 'ox_target'
     elseif GetResourceState('qtarget') == 'started' then
-        targetSystem = 'qtarget'
-        print("^2[ZFundry]^7 qtarget détecté")
+        print("^2[ZFundry]^7 ✓ qtarget détecté!")
+        return 'qtarget'
     elseif GetResourceState('qb-target') == 'started' then
-        targetSystem = 'qb-target'
-        print("^2[ZFundry]^7 qb-target détecté")
+        print("^2[ZFundry]^7 ✓ qb-target détecté!")
+        return 'qb-target'
     else
-        print("^1[ZFundry]^7 ERREUR: Aucun système de target détecté!")
+        print("^1[ZFundry]^7 ✗ ERREUR: Aucun système de target détecté!")
+        return nil
     end
-end)
+end
 
 -- Initialisation
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
     PlayerData = xPlayer
-    Citizen.Wait(1000)
-    SetupTargets()
+    print("^3[ZFundry]^7 Joueur chargé, initialisation...")
+
+    -- Détecter le target system
+    Citizen.Wait(2000) -- Attendre que les ressources soient bien chargées
+    targetSystem = DetectTargetSystem()
+
+    if targetSystem then
+        print("^3[ZFundry]^7 Configuration des zones target...")
+        SetupTargets()
+        targetsSetup = true
+    else
+        print("^1[ZFundry]^7 Impossible de configurer les targets!")
+    end
+
     RefreshJobBlips()
 end)
 
@@ -84,13 +98,19 @@ end
 
 -- Configurer tous les targets
 function SetupTargets()
-    if not targetSystem then return end
+    if not targetSystem then
+        print("^1[ZFundry]^7 SetupTargets appelé mais targetSystem est nil!")
+        return
+    end
+
+    print("^3[ZFundry]^7 Création des zones avec " .. targetSystem)
 
     -- Target Fonderie
+    print("^3[ZFundry]^7 → Création zone Fonderie...")
     AddTargetZone('foundry_zone', Config.Zones.Foundry.Position, {
         name = 'foundry_zone',
         heading = 0.0,
-        debugPoly = false,
+        debugPoly = true, -- MODE DEBUG ACTIVÉ
         minZ = Config.Zones.Foundry.Position.z - 1.0,
         maxZ = Config.Zones.Foundry.Position.z + 2.0
     }, {
@@ -107,10 +127,11 @@ function SetupTargets()
     })
 
     -- Target Bijouterie
+    print("^3[ZFundry]^7 → Création zone Bijouterie...")
     AddTargetZone('jewelry_zone', Config.Zones.Jewelry.Position, {
         name = 'jewelry_zone',
         heading = 0.0,
-        debugPoly = false,
+        debugPoly = true, -- MODE DEBUG ACTIVÉ
         minZ = Config.Zones.Jewelry.Position.z - 1.0,
         maxZ = Config.Zones.Jewelry.Position.z + 2.0
     }, {
@@ -127,10 +148,11 @@ function SetupTargets()
     })
 
     -- Target Export
+    print("^3[ZFundry]^7 → Création zone Export...")
     AddTargetZone('export_zone', Config.Zones.Export.Position, {
         name = 'export_zone',
         heading = 0.0,
-        debugPoly = false,
+        debugPoly = true, -- MODE DEBUG ACTIVÉ
         minZ = Config.Zones.Export.Position.z - 1.0,
         maxZ = Config.Zones.Export.Position.z + 2.0
     }, {
@@ -147,10 +169,11 @@ function SetupTargets()
     })
 
     -- Target Garage
+    print("^3[ZFundry]^7 → Création zone Garage...")
     AddTargetZone('garage_zone', Config.Zones.Garage.Position, {
         name = 'garage_zone',
         heading = 0.0,
-        debugPoly = false,
+        debugPoly = true, -- MODE DEBUG ACTIVÉ
         minZ = Config.Zones.Garage.Position.z - 1.0,
         maxZ = Config.Zones.Garage.Position.z + 2.0
     }, {
@@ -167,10 +190,11 @@ function SetupTargets()
     })
 
     -- Target Boss Actions
+    print("^3[ZFundry]^7 → Création zone Boss...")
     AddTargetZone('boss_zone', Config.Zones.BossActions.Position, {
         name = 'boss_zone',
         heading = 0.0,
-        debugPoly = false,
+        debugPoly = true, -- MODE DEBUG ACTIVÉ
         minZ = Config.Zones.BossActions.Position.z - 1.0,
         maxZ = Config.Zones.BossActions.Position.z + 2.0
     }, {
@@ -189,11 +213,13 @@ function SetupTargets()
         distance = 2.5
     })
 
-    print("^2[ZFundry]^7 Tous les targets ont été configurés!")
+    print("^2[ZFundry]^7 ✓ Tous les targets ont été configurés!")
 end
 
 -- Fonction universelle pour ajouter un target
 function AddTargetZone(name, coords, zoneData, options)
+    print(string.format("^3[ZFundry]^7   AddTargetZone: %s à (%.2f, %.2f, %.2f)", name, coords.x, coords.y, coords.z))
+
     if targetSystem == 'ox_target' then
         -- Convertir les options pour ox_target (action -> onSelect)
         local oxOptions = {}
@@ -207,13 +233,26 @@ function AddTargetZone(name, coords, zoneData, options)
             })
         end
 
-        exports.ox_target:addBoxZone({
+        local zoneConfig = {
             coords = coords,
             size = vec3(2.0, 2.0, 2.0),
             rotation = zoneData.heading or 0.0,
             debug = zoneData.debugPoly or false,
             options = oxOptions
-        })
+        }
+
+        print(string.format("^3[ZFundry]^7   → ox_target zone config: debug=%s, options=%d", tostring(zoneConfig.debug), #oxOptions))
+
+        local success, result = pcall(function()
+            exports.ox_target:addBoxZone(zoneConfig)
+        end)
+
+        if success then
+            print(string.format("^2[ZFundry]^7   ✓ Zone %s créée avec succès!", name))
+        else
+            print(string.format("^1[ZFundry]^7   ✗ Erreur création zone %s: %s", name, tostring(result)))
+        end
+
     elseif targetSystem == 'qtarget' or targetSystem == 'qb-target' then
         local targetExport = targetSystem == 'qtarget' and exports.qtarget or exports['qb-target']
         targetExport:AddBoxZone(name, coords, 2.0, 2.0, {
@@ -226,6 +265,7 @@ function AddTargetZone(name, coords, zoneData, options)
             options = options.options,
             distance = options.distance
         })
+        print(string.format("^2[ZFundry]^7   ✓ Zone %s créée avec %s!", name, targetSystem))
     end
 end
 
