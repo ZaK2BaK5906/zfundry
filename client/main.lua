@@ -189,29 +189,7 @@ function SetupTargets()
         distance = 3.0
     })
 
-    -- Target Boss Actions
-    print("^3[ZFundry]^7 → Création zone Boss...")
-    AddTargetZone('boss_zone', Config.Zones.BossActions.Position, {
-        name = 'boss_zone',
-        heading = 0.0,
-        debugPoly = true, -- MODE DEBUG ACTIVÉ
-        minZ = Config.Zones.BossActions.Position.z - 1.0,
-        maxZ = Config.Zones.BossActions.Position.z + 2.0
-    }, {
-        options = {
-            {
-                icon = 'fas fa-user-tie',
-                label = 'Actions Patron',
-                action = function()
-                    OpenBossActionsMenu()
-                end,
-                canInteract = function()
-                    return PlayerData.job and PlayerData.job.name == Config.Job and PlayerData.job.grade_name == 'boss'
-                end
-            }
-        },
-        distance = 2.5
-    })
+    -- Boss menu removed (not needed)
 
     print("^2[ZFundry]^7 ✓ Tous les targets ont été configurés!")
 end
@@ -382,21 +360,7 @@ function OpenGarageMenu()
     end
 end
 
--- Menu Boss Actions (UI Personnalisée)
-function OpenBossActionsMenu()
-    if PlayerData.job and PlayerData.job.name == Config.Job and PlayerData.job.grade_name == 'boss' then
-        ESX.TriggerServerCallback('zfundry:getBossData', function(data)
-            SetNuiFocus(true, true)
-            SendNUIMessage({
-                action = 'openBossUI',
-                societyMoney = data.money,
-                employees = data.employees
-            })
-        end)
-    else
-        SendNotification("Vous n'êtes pas le patron!", 'error')
-    end
-end
+-- Boss menu removed
 
 -- NUI Callbacks
 RegisterNUICallback('craftItem', function(data, cb)
@@ -464,16 +428,6 @@ RegisterNUICallback('storeVehicle', function(data, cb)
     cb('ok')
 end)
 
-RegisterNUICallback('withdrawMoney', function(data, cb)
-    TriggerServerEvent('zfundry:withdrawMoney', data.amount)
-    cb('ok')
-end)
-
-RegisterNUICallback('depositMoney', function(data, cb)
-    TriggerServerEvent('zfundry:depositMoney', data.amount)
-    cb('ok')
-end)
-
 RegisterNUICallback('closeUI', function(data, cb)
     SetNuiFocus(false, false)
     cb('ok')
@@ -537,21 +491,6 @@ end)
 RegisterNetEvent('zfundry:notify')
 AddEventHandler('zfundry:notify', function(message, type)
     SendNotification(message, type)
-end)
-
--- Refresh UI après transaction
-RegisterNetEvent('zfundry:refreshBossUI')
-AddEventHandler('zfundry:refreshBossUI', function()
-    -- Rafraîchir les données du menu boss si ouvert
-    if PlayerData.job and PlayerData.job.name == Config.Job and PlayerData.job.grade_name == 'boss' then
-        ESX.TriggerServerCallback('zfundry:getBossData', function(data)
-            SendNUIMessage({
-                action = 'updateBossData',
-                societyMoney = data.money,
-                employees = data.employees
-            })
-        end)
-    end
 end)
 
 -- Commande de debug pour tester

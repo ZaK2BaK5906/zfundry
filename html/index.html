@@ -62,44 +62,6 @@
         </div>
     </div>
 
-    <!-- UI Boss -->
-    <div id="bossUI" class="ui-container" style="display: none;">
-        <div class="ui-wrapper">
-            <div class="ui-header">
-                <h1 class="ui-title">👔 Actions Patron</h1>
-                <button class="close-btn" onclick="closeUI('boss')">✕</button>
-            </div>
-            <div class="ui-content">
-                <div class="boss-container">
-                    <div class="society-money">
-                        <h2>💰 Argent de la Société</h2>
-                        <p class="money-amount" id="societyMoney">$0</p>
-                    </div>
-                    <div class="boss-actions">
-                        <div class="money-action">
-                            <h3>Retirer de l'argent</h3>
-                            <div class="input-group">
-                                <input type="number" id="withdrawAmount" placeholder="Montant" min="1">
-                                <button class="action-btn" onclick="withdrawMoney()">Retirer</button>
-                            </div>
-                        </div>
-                        <div class="money-action">
-                            <h3>Déposer de l'argent</h3>
-                            <div class="input-group">
-                                <input type="number" id="depositAmount" placeholder="Montant" min="1">
-                                <button class="action-btn" onclick="depositMoney()">Déposer</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="employees-list">
-                        <h2>👥 Employés</h2>
-                        <div id="employeesList"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Modal de quantité -->
     <div id="quantityModal" class="modal" style="display: none;">
         <div class="modal-content">

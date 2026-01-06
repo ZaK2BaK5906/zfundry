@@ -17,12 +17,6 @@ window.addEventListener('message', function(event) {
         case 'openExportUI':
             openExportUI(data.items);
             break;
-        case 'openBossUI':
-            openBossUI(data.societyMoney, data.employees);
-            break;
-        case 'updateBossData':
-            updateBossData(data.societyMoney, data.employees);
-            break;
         case 'notify':
             showNotification(data.message, data.type);
             break;
@@ -180,56 +174,6 @@ function getExportPrice(itemName) {
     return prices[itemName] || 100;
 }
 
-// BOSS UI
-function openBossUI(societyMoney, employees) {
-    currentData = {societyMoney, employees};
-    currentUIType = 'boss';
-    
-    updateBossData(societyMoney, employees);
-    document.getElementById('bossUI').style.display = 'flex';
-}
-
-function updateBossData(societyMoney, employees) {
-    document.getElementById('societyMoney').textContent = '$' + societyMoney.toLocaleString();
-    
-    const employeesList = document.getElementById('employeesList');
-    employeesList.innerHTML = '';
-    
-    const grades = ['Apprenti', 'Ouvrier', 'Patron'];
-    employees.forEach(emp => {
-        const div = document.createElement('div');
-        div.className = 'employee-item';
-        div.innerHTML = 
-            '<span class="employee-name">' + emp.name + '</span>' +
-            '<span class="employee-grade">' + (grades[emp.grade] || 'Grade ' + emp.grade) + '</span>';
-        employeesList.appendChild(div);
-    });
-}
-
-function withdrawMoney() {
-    const amount = parseInt(document.getElementById('withdrawAmount').value);
-    if (amount && amount > 0) {
-        fetch('https://' + GetParentResourceName() + '/withdrawMoney', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({amount})
-        });
-        document.getElementById('withdrawAmount').value = '';
-    }
-}
-
-function depositMoney() {
-    const amount = parseInt(document.getElementById('depositAmount').value);
-    if (amount && amount > 0) {
-        fetch('https://' + GetParentResourceName() + '/depositMoney', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({amount})
-        });
-        document.getElementById('depositAmount').value = '';
-    }
-}
-
 // MODAL
 function openQuantityModal(data, action) {
     currentModalAction = {data, action};
@@ -327,7 +271,7 @@ function closeUI(type) {
 }
 
 function closeAllUIs() {
-    ['crafting', 'garage', 'export', 'boss'].forEach(type => {
+    ['crafting', 'garage', 'export'].forEach(type => {
         document.getElementById(type + 'UI').style.display = 'none';
     });
     closeQuantityModal();
