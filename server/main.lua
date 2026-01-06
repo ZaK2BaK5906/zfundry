@@ -51,7 +51,17 @@ AddEventHandler('zfundry:finishCrafting', function(recipe, amount, craftType)
 
     -- Vérifier si le joueur a la place
     local item = xPlayer.getInventoryItem(recipe.item)
-    if item.limit ~= -1 and (item.count + totalAmount) > item.limit then
+    if not item then
+        TriggerClientEvent('zfundry:notify', source, "Erreur: L'item " .. recipe.item .. " n'existe pas dans ox_inventory!", 'error')
+
+        -- Rembourser les ingrédients
+        for _, ingredient in ipairs(recipe.requires) do
+            xPlayer.addInventoryItem(ingredient.item, ingredient.amount * amount)
+        end
+        return
+    end
+
+    if item.limit and item.limit ~= -1 and (item.count + totalAmount) > item.limit then
         TriggerClientEvent('zfundry:notify', source, "Vous n'avez pas assez de place dans votre inventaire!", 'error')
 
         -- Rembourser les ingrédients
