@@ -553,3 +553,47 @@ AddEventHandler('zfundry:refreshBossUI', function()
         end)
     end
 end)
+
+-- Commande de debug pour tester
+RegisterCommand('zfdebug', function()
+    print("^3========== ZFUNDRY DEBUG ==========^7")
+    print("^3PlayerData Job:^7 " .. (PlayerData.job and PlayerData.job.name or "nil"))
+    if PlayerData.job then
+        print("^3Job Grade:^7 " .. (PlayerData.job.grade or "nil"))
+        print("^3Job Grade Name:^7 " .. (PlayerData.job.grade_name or "nil"))
+    end
+    print("^3Target System:^7 " .. (targetSystem or "nil"))
+    print("^3Targets Setup:^7 " .. tostring(targetsSetup))
+    print("^3Job Blips Count:^7 " .. #jobBlips)
+    print("^3Config.Job:^7 " .. Config.Job)
+    print("^3===================================^7")
+
+    -- Forcer le refresh des blips
+    RefreshJobBlips()
+
+    -- Forcer le setup des targets si pas encore fait
+    if not targetsSetup and not targetSystem then
+        targetSystem = DetectTargetSystem()
+        if targetSystem then
+            SetupTargets()
+            targetsSetup = true
+        end
+    end
+end, false)
+
+-- Fallback: Setup au démarrage pour les joueurs déjà connectés
+Citizen.CreateThread(function()
+    Citizen.Wait(5000) -- Attendre 5 secondes après le démarrage
+
+    if not targetsSetup then
+        print("^3[ZFundry]^7 Fallback: Setup des targets après démarrage...")
+        PlayerData = ESX.GetPlayerData()
+        targetSystem = DetectTargetSystem()
+
+        if targetSystem then
+            SetupTargets()
+            targetsSetup = true
+            RefreshJobBlips()
+        end
+    end
+end)
