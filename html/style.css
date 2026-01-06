@@ -7,7 +7,7 @@ body {font-family: 'Inter', sans-serif; background: transparent; overflow: hidde
 .ui-container {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     display: flex; justify-content: center; align-items: center;
-    background: rgba(0, 0, 0, 0.95); backdrop-filter: blur(20px);
+    background: transparent;
     z-index: 9999; animation: fadeIn 0.4s ease;
 }
 
@@ -208,6 +208,40 @@ body {font-family: 'Inter', sans-serif; background: transparent; overflow: hidde
     font-weight: 700;
 }
 
+.ingredient-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #888;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ingredient-req-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.ingredient-req-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.ingredient-req-amount {
+    color: #fff;
+    font-weight: 700;
+}
+
 .grade-badge {
     background: rgba(255, 69, 58, 0.15);
     color: #ff453a;
@@ -350,7 +384,7 @@ body {font-family: 'Inter', sans-serif; background: transparent; overflow: hidde
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(0, 0, 0, 0.95);
+    background: transparent;
     z-index: 10000;
     animation: fadeIn 0.3s ease;
 }

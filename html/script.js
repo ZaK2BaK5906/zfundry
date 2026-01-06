@@ -3,6 +3,77 @@ let currentData = null;
 let currentUIType = null;
 let currentModalAction = null;
 
+// Mapping des items vers leurs labels
+const itemLabels = {
+    // Minerais
+    iron_ore: 'Minerai de Fer',
+    copper_ore: 'Minerai de Cuivre',
+    gold_ore: 'Minerai d\'Or',
+    quartz: 'Quartz Brut',
+    emerald: 'Émeraude Brute',
+    ruby: 'Rubis Brut',
+    pink_sapphire: 'Saphir Rose Brut',
+    amethyst: 'Améthyste Brute',
+    diamond: 'Diamant Brut',
+    blue_diamond: 'Diamant Bleu Brut',
+
+    // Lingots
+    iron_ingot: 'Lingot de Fer',
+    steel_ingot: 'Lingot d\'Acier',
+    copper_ingot: 'Lingot de Cuivre',
+    gold_ingot: 'Lingot d\'Or',
+
+    // Pierres taillées
+    cut_quartz: 'Quartz Taillé',
+    cut_emerald: 'Émeraude Taillée',
+    cut_ruby: 'Rubis Taillé',
+    cut_pink_sapphire: 'Saphir Rose Taillé',
+    cut_amethyst: 'Améthyste Taillée',
+    cut_diamond: 'Diamant Taillé',
+    cut_blue_diamond: 'Diamant Bleu Taillé',
+
+    // Bijoux de base
+    gold_ring_base: 'Anneau en Or',
+    gold_necklace_base: 'Collier en Or',
+    gold_earrings_base: 'Boucles d\'Oreilles en Or',
+
+    // Bijoux avec pierres
+    emerald_ring: 'Bague Émeraude',
+    emerald_necklace: 'Collier Émeraude',
+    ruby_ring: 'Bague Rubis',
+    ruby_necklace: 'Collier Rubis',
+    pink_sapphire_ring: 'Bague Saphir Rose',
+    pink_sapphire_necklace: 'Collier Saphir Rose',
+    amethyst_ring: 'Bague Améthyste',
+    amethyst_necklace: 'Collier Améthyste',
+    diamond_ring: 'Bague Diamant',
+    diamond_necklace: 'Collier Diamant',
+    diamond_earrings: 'Boucles Diamant',
+    blue_diamond_ring: 'Bague Diamant Bleu',
+    blue_diamond_necklace: 'Collier Diamant Bleu',
+
+    // Items mécaniques
+    engine: 'Moteur',
+    turbo: 'Turbo',
+    suspension: 'Suspension',
+    brakes: 'Freins',
+    repair_kit: 'Kit de Réparation',
+
+    // Items hôpital
+    bandage: 'Bandage',
+    medikit: 'Kit Médical',
+
+    // Items police
+    handcuffs: 'Menottes',
+
+    // Items gouvernement
+    id_card: 'Carte d\'Identité'
+};
+
+function getItemLabel(itemName) {
+    return itemLabels[itemName] || itemName;
+}
+
 // Écouter les messages de FiveM
 window.addEventListener('message', function(event) {
     const data = event.data;
@@ -65,7 +136,7 @@ function openCraftingUI(recipes, title, menuType) {
         
         let ingredientsHTML = '';
         recipe.requires.forEach(ing => {
-            ingredientsHTML += '<div class="ingredient-item"><span>' + ing.item + '</span><span class="ingredient-amount">' + ing.amount + 'x</span></div>';
+            ingredientsHTML += '<div class="ingredient-item"><span>' + getItemLabel(ing.item) + '</span><span class="ingredient-amount">' + ing.amount + 'x</span></div>';
         });
 
         card.innerHTML = 
@@ -231,7 +302,7 @@ function updateQuantityDisplay(quantity) {
 function updateIngredientsDisplay(requires, quantity) {
     let html = '<div class="ingredient-req-title">Ingrédients requis (Total):</div>';
     requires.forEach(ing => {
-        html += '<div class="ingredient-req-item"><span>' + ing.item + '</span><span class="ingredient-req-amount">' + (ing.amount * quantity) + 'x</span></div>';
+        html += '<div class="ingredient-req-item"><span>' + getItemLabel(ing.item) + '</span><span class="ingredient-req-amount">' + (ing.amount * quantity) + 'x</span></div>';
     });
     document.getElementById('ingredientsRequired').innerHTML = html;
 }
