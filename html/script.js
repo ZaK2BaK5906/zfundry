@@ -5,10 +5,11 @@ let currentModalAction = null;
 
 // Mapping des items vers leurs labels
 const itemLabels = {
-    // Minerais
+    // Minerais bruts
     iron_ore: 'Minerai de Fer',
     copper_ore: 'Minerai de Cuivre',
     gold_ore: 'Minerai d\'Or',
+    silver_ore: 'Minerai d\'Argent',
     quartz: 'Quartz Brut',
     emerald: 'Émeraude Brute',
     ruby: 'Rubis Brut',
@@ -17,13 +18,14 @@ const itemLabels = {
     diamond: 'Diamant Brut',
     blue_diamond: 'Diamant Bleu Brut',
 
-    // Lingots
+    // Lingots (métaux fondus)
     iron_ingot: 'Lingot de Fer',
     steel_ingot: 'Lingot d\'Acier',
     copper_ingot: 'Lingot de Cuivre',
     gold_ingot: 'Lingot d\'Or',
+    silver_ingot: 'Lingot d\'Argent',
 
-    // Pierres taillées
+    // Pierres précieuses taillées
     cut_quartz: 'Quartz Taillé',
     cut_emerald: 'Émeraude Taillée',
     cut_ruby: 'Rubis Taillé',
@@ -32,12 +34,17 @@ const itemLabels = {
     cut_diamond: 'Diamant Taillé',
     cut_blue_diamond: 'Diamant Bleu Taillé',
 
-    // Bijoux de base
+    // Bases de bijoux en or
     gold_ring_base: 'Anneau en Or',
     gold_necklace_base: 'Collier en Or',
     gold_earrings_base: 'Boucles d\'Oreilles en Or',
 
-    // Bijoux avec pierres
+    // Bases de bijoux en argent
+    silver_ring_base: 'Anneau en Argent',
+    silver_necklace_base: 'Collier en Argent',
+    silver_earrings_base: 'Boucles d\'Oreilles en Argent',
+
+    // Bijoux en or avec pierres
     emerald_ring: 'Bague Émeraude',
     emerald_necklace: 'Collier Émeraude',
     ruby_ring: 'Bague Rubis',
@@ -52,22 +59,11 @@ const itemLabels = {
     blue_diamond_ring: 'Bague Diamant Bleu',
     blue_diamond_necklace: 'Collier Diamant Bleu',
 
-    // Items mécaniques
-    engine: 'Moteur',
-    turbo: 'Turbo',
-    suspension: 'Suspension',
-    brakes: 'Freins',
-    repair_kit: 'Kit de Réparation',
-
-    // Items hôpital
-    bandage: 'Bandage',
-    medikit: 'Kit Médical',
-
-    // Items police
-    handcuffs: 'Menottes',
-
-    // Items gouvernement
-    id_card: 'Carte d\'Identité'
+    // Bijoux en argent avec pierres
+    silver_emerald_ring: 'Bague Argent Émeraude',
+    silver_ruby_ring: 'Bague Argent Rubis',
+    silver_amethyst_ring: 'Bague Argent Améthyste',
+    silver_diamond_ring: 'Bague Argent Diamant'
 };
 
 function getItemLabel(itemName) {
