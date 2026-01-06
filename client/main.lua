@@ -195,12 +195,24 @@ end
 -- Fonction universelle pour ajouter un target
 function AddTargetZone(name, coords, zoneData, options)
     if targetSystem == 'ox_target' then
+        -- Convertir les options pour ox_target (action -> onSelect)
+        local oxOptions = {}
+        for _, opt in ipairs(options.options) do
+            table.insert(oxOptions, {
+                name = opt.label,
+                icon = opt.icon,
+                label = opt.label,
+                onSelect = opt.action,
+                canInteract = opt.canInteract
+            })
+        end
+
         exports.ox_target:addBoxZone({
             coords = coords,
             size = vec3(2.0, 2.0, 2.0),
             rotation = zoneData.heading or 0.0,
             debug = zoneData.debugPoly or false,
-            options = options.options
+            options = oxOptions
         })
     elseif targetSystem == 'qtarget' or targetSystem == 'qb-target' then
         local targetExport = targetSystem == 'qtarget' and exports.qtarget or exports['qb-target']
